@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title id="windowtitle">DU Parcel System</title>
+    <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <nav class="navbar navbar-expand navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand mb-0 h1" href="#" id="title">❄️ John Snow Parcel System 📦</a>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav nav-pills me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="../viewParcels/viewParcels.html">Collect</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active text-white" aria-current="page" href="#">Add</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Setting</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-lg pt-3">
+    <div class="row">
+      <div class="col-sm">
+        <form class="d-flex">
+          <input id="searchTextBox" class="form-control me-2" type="search" placeholder="Last Name" aria-label="Search"
+           onpropertychange onkeyup onpaste oninput="getSearchLastName()">
+        </form>
+      </div>
+
+      <div class="col-sm">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="staffCheckBox" />
+          <label class="form-check-label" for="staffCheckBox">Include Staff</label>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <table class="table" id="studentTable">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">First</th>
+        <th scope="col">Last</th>
+        <th scope="col">Type</th>
+        <th scope="col">Email</th>
+        <th scope="col">Select</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">1</th>
+        <td>AARON</td>
+        <td>CHEUNG</td>
+        <td>Undergraduate</td>
+        <td>CHEUNG, AARON (Student) (aaron.cheung@durham.ac.uk)</td>
+        <td><button type="button" class="btn btn-primary">Select</button></td>
+      </tr>
+      <!-- <tr>
+        <th scope="row">2</th>
+        <td>Jacob</td>
+        <td>Thornton</td>
+        <td>@fat</td>
+      </tr>
+      <tr>
+        <th scope="row">3</th>
+        <td colspan="2">Larry the Bird</td>
+        <td>@twitter</td>
+      </tr> -->
+    </tbody>
+  </table>
+
+
+
+
+    <script src="./addParcel.js"></script>
+    <!-- <script src="../../../data/johnSnow.json"></script> -->
+</body>
+</html>

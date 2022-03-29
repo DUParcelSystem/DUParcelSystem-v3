@@ -15,10 +15,12 @@ function findStudent(searchLastName, checkBox) {
     for (const [user, data] of Object.entries(database)) {
 
         if (database[user]["lName"].toLowerCase().startsWith(searchLastName.toLowerCase())) {
+            var temp = database[user]
+            temp["cis"] = user
             if (checkBox == false && database[user]["type"] == "Undergraduate") {
-                searchStudent.push(database[user]);
+                searchStudent.push(temp);
             } else if (checkBox == true) {
-                searchStudent.push(database[user]);
+                searchStudent.push(temp);
             }
         }
     };

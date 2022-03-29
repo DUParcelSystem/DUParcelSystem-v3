@@ -6,11 +6,12 @@ const findStudent = require('../readJSON');
 
 
 // avoid refresh page when enter if press
-document.getElementById("searchTextBox").addEventListener("keypress", function(event) {
+document.getElementById("searchTextBox").addEventListener("keypress", function (event) {
     if (event.key === "Enter") {
         event.preventDefault();
         getSearchLastName()
     }
+
 
 });
 
@@ -20,29 +21,44 @@ function getSearchLastName() {
     const searchLastName = document.getElementById("searchTextBox").value;
     const checkBox = document.getElementById("staffCheckBox").checked;
 
-
     const searchStudent = findStudent(searchLastName, checkBox)
-    console.log("changed", searchLastName);
 
-    console.log(searchStudent);
+    const searchStudentNum = searchStudent.length
 
-    // showStudentsName(searchStudent)
+    showStudentsName(searchStudent, searchStudentNum);
+
+    selectStudent(searchStudent, searchStudentNum);
+
 }
 
 
-function showStudentsName(searchStudent) {
+function showStudentsName(searchStudent, searchStudentNum) {
 
-    // Find a <table> element with id="myTable":
     const table = document.getElementById("studentTable");
+    while (table.rows.length > 1) {
+        table.deleteRow(1);
+    }
 
-    const searchStudentNum = searchStudent.length
+    function getTitleCase(str) {
+        const titleCase = str
+          .toLowerCase()
+          .split(' ')
+          .map(word => {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+          })
+          .join(' ');
+
+        return titleCase;
+      }
 
     for (var i = 0; i < searchStudentNum; ++i) {
 
         var row = table.insertRow(-1);
-        const currentStudent = searchStudentNum[i]
-
-        console.log(currentStudent);
+        var currentStudent = searchStudent[i]
+        var showNum = i + 1
+        if (showNum > 9) {
+            showNum = ''
+        }
 
         var num = row.insertCell(0);
         var first = row.insertCell(1);
@@ -51,18 +67,35 @@ function showStudentsName(searchStudent) {
         var email = row.insertCell(4);
         var select = row.insertCell(5);
 
-        num.innerHTML = i
-        first.innerHTML = currentStudent.fName;
-        last.innerHTML = currentStudent.lName;
+        num.innerHTML = showNum
+        first.innerHTML = getTitleCase(currentStudent.fName);
+        last.innerHTML = getTitleCase(currentStudent.lName);
         type.innerHTML = currentStudent.type;
         email.innerHTML = currentStudent.email;
-        select.innerHTML = `<button type="button" id="${}" class="btn btn-primary">Select</button>`;
+        select.innerHTML = `<button type="button" id="selectStudent-${i}" class="btn btn-primary">Select<p hidden>*${i}*</p></button>`;
 
     }
 
+};
 
 
-}
+function selectStudent(searchStudent, searchStudentNum) {
+
+    for (let i = 0; i < searchStudentNum; i++) {
+        document.getElementById(`selectStudent-${i}`).addEventListener("click", function (event) {
+            let id = document.getElementById(`selectStudent-${i}`).innerHTML.split('*')
+            arrayIndex = id[1]
+
+
+            console.log(arrayIndex);
+        });
+    };
+
+};
+
+
+
+
 
 // searchLastName = 'che'
 

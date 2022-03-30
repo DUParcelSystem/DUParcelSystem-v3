@@ -51,4 +51,4 @@ function findStudent(searchLastName, checkBox) {
 }
 
 
-module.exports = findStudent;
+module.exports = { database, findStudent };

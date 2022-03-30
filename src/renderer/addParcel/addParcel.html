@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title id="windowtitle">DU Parcel System</title>
     <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js">
+    <link rel="stylesheet" href="../../../node_modules/bootstrap/scss/bootstrap.scss"> -->
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -13,25 +16,70 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav nav-pills me-auto">
           <li class="nav-item">
-            <a class="nav-link" href="../viewParcels/viewParcels.html">Collect</a>
+            <a class="nav-link" href="../collectParcel/collectParcel.html">Collect</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../viewParcels/viewParcels.html">View</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active text-white" aria-current="page" href="#">Add</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Setting</a>
-          </li>
+        </ul>
+        <ul class="navbar-nav d-flex flex-row">
+          <a class="nav-link" href="../settings/settings.html">Setting</a>
         </ul>
       </div>
     </div>
   </nav>
 
+
+
+  <div class="modal fade" id="selectPackageTypeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header">
+
+          <h5 class="modal-title" id="exampleModalLabel">Select package</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p id="modalText"></p>
+          <p id="modalStudInfo" hidden></p>
+
+          <div class="alert alert-warning" role="alert" id="alertToChoosePackageType" style="display: none;">
+            You must select one type of package!
+          </div>
+
+          <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" name="btnPackage" id="btnradio1" autocomplete="off" value="Parcel">
+            <label class="btn btn-outline-primary" for="btnradio1">Parcel</label>
+
+            <input type="radio" class="btn-check" name="btnPackage" id="btnradio2" autocomplete="off" value="Letter">
+            <label class="btn btn-outline-primary" for="btnradio2">Letter</label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="selectPackage()">Add package</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop fade show" id="backdrop" style="display: none;"></div>
+
+
   <div class="container-lg pt-3">
     <div class="row">
       <div class="col-sm">
         <form class="d-flex">
-          <input id="searchTextBox" class="form-control me-2" type="search" placeholder="Last Name" aria-label="Search"
-           onpropertychange onkeyup onpaste oninput="getSearchLastName()">
+          <input id="searchTextBox" class="form-control me-2" type="text" placeholder="Last Name" aria-label="Search"
+           onpropertychange onkeyup onpaste oninput="getSearchLastName()" onkeypress="return isNumberKey(event)">
         </form>
       </div>
 
@@ -46,43 +94,43 @@
   </div>
 
   <div class="container-lg pt-3">
-    <div class="row">
-      <div class="col-sm">
 
-  <table class="table" id="studentTable">
-    <thead class="thead-dark">
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">First</th>
-        <th scope="col">Last</th>
-        <th scope="col">Type</th>
-        <th scope="col">Email</th>
-        <th scope="col">Select</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th scope="row">1</th>
-        <td>AARON</td>
-        <td>CHEUNG</td>
-        <td>Undergraduate</td>
-        <td>CHEUNG, AARON (Student) (aaron.cheung@durham.ac.uk)</td>
-        <td><button type="button" class="btn btn-primary" id="selectStudent-1">Select</button></td>
-      </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td>AARON</td>
-        <td>CHEUNG</td>
-        <td>Undergraduate</td>
-        <td>CHEUNG, AARON (Student) (aaron.cheung@durham.ac.uk)</td>
-        <td><button type="button" class="btn btn-primary" id="selectStudent-2">Select</button></td>
-      </tr>
-    </tbody>
-  </table>
+    <table class="table table-bordered" id="studentTable">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">First</th>
+          <th scope="col">Last</th>
+          <th scope="col">Type</th>
+          <th scope="col">Email</th>
+          <th scope="col">Select</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- <tr>
+          <th scope="row">1</th>
+          <td>AARON</td>
+          <td>CHEUNG</td>
+          <td>Undergraduate</td>
+          <td>CHEUNG, AARON (Student) (aaron.cheung@durham.ac.uk)</td>
+          <td><button type="button" class="btn btn-primary" id="selectStudent-1">Select</button></td>
+        </tr>
+        <tr>
+          <th scope="row">2</th>
+          <td>AARON</td>
+          <td>CHEUNG</td>
+          <td>Undergraduate</td>
+          <td>CHEUNG, AARON (Student) (aaron.cheung@durham.ac.uk)</td>
+          <td><button type="button" class="btn btn-primary" id="selectStudent-2">Select</button></td>
+        </tr> -->
+      </tbody>
+    </table>
+  </div>
 
-  <div class="col-sm"></div>
+  <div class="container-lg pt-3">
+  <p id="showAllAddPackages"></p>
+  </div>
 
-  hi
 
     <script src="./addParcel.js"></script>
     <!-- <script src="../../../data/johnSnow.json"></script> -->

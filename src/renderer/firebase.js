@@ -23,8 +23,6 @@ const db = getFirestore(app);
 
 
 // write package data to firebase
-
-
 async function addPackageFirebase(addPackages) {
 
     const addPackagesNum = addPackages.length

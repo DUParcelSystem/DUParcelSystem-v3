@@ -245,7 +245,9 @@ function uploadPackagesFirebase() {
     const uploadedPackagesNum = addPackages.length
 
     // call firebase to upload
-    addPackageFirebase(addPackages)
+    if (uploadedPackagesNum != 0) {
+        addPackageFirebase(addPackages)
+    }
 
     // clear array
     addPackages = []
@@ -367,7 +369,7 @@ function clearBtnPackage() {
 
 // Get the modal
 var selectModal = document.getElementById('selectPackageTypeModal');
-var removeModal = document.getElementById('selectPackageTypeModal');
+var removeModal = document.getElementById('removePackageModal');
 
 
 // When the user clicks anywhere outside of the modal, close it

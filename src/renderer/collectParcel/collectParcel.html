@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title id="windowtitle">DU Parcel System</title>
     <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -33,6 +34,46 @@
       A simple primary alert—check it out!
 
       Collect Parcel
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <form class="d-flex">
+            <input id="searchTextBox" class="form-control me-2" type="search" placeholder="CIS" aria-label="Search">
+          </form>
+        </div>
+        <div class="col">
+          <h6 class="notbold">CIS</h6>
+          <h4 id="cisText">qwwk95</h4>
+        </div>
+        <div class="col">
+          <p class="text-end" id="nfcReaderText">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill text-warning" viewBox="0 0 16 16">
+              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+            </svg> checking is NFC reader connected...
+        </p>
+        </div>
+      </div>
+
+      <div class="row pt-3">
+        <div class="col">
+          <h4 class="notbold">Last Name</h4>
+          <h1 id="firstNameText">Cheung</h1>
+        </div>
+        <div class="col">
+          <h4 class="notbold">First Name</h4>
+          <h1 id="lastNameText">Aaron</h1>
+        </div>
+        <div class="col">
+          <h4 class="notbold">Number of Parcel 📦 </h4>
+          <h1 id="numberOfParcelText">1</h1>
+        </div>
+        <div class="col">
+          <h4 class="notbold">Number of Letter ✉️ </h4>
+          <h1 id="numberOfLetterText">3</h1>
+        </div>
+      </div>
     </div>
 
     <script src="./collectParcel.js"></script>

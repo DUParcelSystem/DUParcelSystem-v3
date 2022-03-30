@@ -11,7 +11,7 @@ function createWindow () {
     }
   })
 
-  win.loadFile('src/renderer/addParcel/addParcel.html')
+  win.loadFile('src/renderer/collectParcel/collectParcel.html')
 
   win.webContents.openDevTools();
 }

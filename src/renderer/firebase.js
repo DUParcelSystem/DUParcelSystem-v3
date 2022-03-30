@@ -20,17 +20,32 @@ const db = getFirestore(app);
 
 
 
+
+
 // write package data to firebase
 
 
 async function addPackageFirebase(addPackages) {
 
-    // console.log(addPackages[0]);
-    // console.log(addPackages[0]["cis"]);
+    const addPackagesNum = addPackages.length
+
+    for (let i = 0; i < addPackagesNum; i++) {
+
+        const package = addPackages[i]
+        const studCIS = package["cis"]
+
+        // console.log("package", package);
+        // console.log("cis", studCIS);
+
+        // Add a new document with a generated id.
+        const docRef = await addDoc(collection(db, "Test College", studCIS, "packages"), package);
+        // console.log("Document written with ID: ", docRef.id);
+
+    }
 
     // const packageData = {
     //     arrivedTime: serverTimestamp(),
-    //     arrivedBy: 'Ben',
+    //     arrivedBy: pcUserName,
     //     arrivedEmailSent: null,
     //     type: 'Letter',
     //     collectedTime: null,
@@ -40,10 +55,6 @@ async function addPackageFirebase(addPackages) {
     //     parcelNo: null,
     //     cis: "qwwk95"
     // }
-
-    // Add a new document with a generated id.
-    const docRef = await addDoc(collection(db, "Test College", "qwwk95", "packages"), addPackages);
-    console.log("Document written with ID: ", docRef.id);
 
 }
 

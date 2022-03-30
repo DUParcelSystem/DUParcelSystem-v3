@@ -1,6 +1,7 @@
 const { database, findStudent } = require('../readJSON.js');
 const addPackageFirebase = require('../firebase.js');
 const { serverTimestamp } = require('firebase/firestore');
+const fullName = require('fullname');
 require('dotenv').config();
 
 document.getElementById("windowtitle").innerHTML = process.env.COLLEGE;
@@ -20,6 +21,11 @@ document.getElementById("title").innerHTML = process.env.COLLEGE;
 // }
 
 var addPackages = []
+
+var pcUserName;
+(async () => {
+    pcUserName  = await fullName();
+})();
 
 // avoid refresh page when enter if press
 document.getElementById("searchTextBox").addEventListener("keypress", function (event) {
@@ -57,6 +63,7 @@ function getSearchLastName() {
 
     selectStudent(searchStudent, searchStudentNum);
 
+
 }
 
 function showStudentsName(searchStudent, searchStudentNum) {
@@ -64,6 +71,20 @@ function showStudentsName(searchStudent, searchStudentNum) {
     const table = document.getElementById("studentTable");
     while (table.rows.length > 1) {
         table.deleteRow(1);
+    }
+
+    if (searchStudentNum == 0) {
+        var row = table.insertRow(-1);
+
+        var num = row.insertCell(0);
+        var first = row.insertCell(1);
+        var last = row.insertCell(2);
+
+        num.innerHTML = ""
+        first.colSpan = "2"
+        first.innerHTML = "<h4>🥳 More happiness to come 📦</h4>"
+        last.colSpan = "2"
+        last.innerHTML = "<h4>👆🏻 Enter the surname above to find the next happiness 😄</h4>"
     }
 
     for (var i = 0; i < searchStudentNum; ++i) {
@@ -109,9 +130,6 @@ function selectStudent(searchStudent, searchStudentNum) {
             `
             showModal()
 
-            console.log(arrayIndex);
-            console.log(studentInfo);
-
             document.getElementById("modalStudInfo").innerHTML = `*${JSON.stringify(studentInfo)}*`
 
         });
@@ -137,7 +155,7 @@ function selectPackage() {
 
     const packageData = {
         arrivedTime: serverTimestamp(),
-        arrivedBy: null,
+        arrivedBy: pcUserName,
         arrivedEmailSent: null,
         type: packageType,
         collectedTime: null,
@@ -147,8 +165,6 @@ function selectPackage() {
         parcelNo: null,
         cis: cis
     }
-
-    // addPackageFirebase(packageData)
 
     addPackages.push(packageData)
 
@@ -162,25 +178,11 @@ function selectPackage() {
 function showAllAddPackages() {
 
     const addPackagesNum = addPackages.length
-
     const showListDom = document.getElementById("showAllAddPackages")
-    showListDom.innerHTML = `<h3>${addPackagesNum} packages are waiting to be add to database:</h3>
-    <h6>(emails will be send out at 3pm each day)</h6>`
 
-    var createTable = document.createElement("table");
-    createTable.classList.add("table");
-    createTable.classList.add("table-bordered");
-    createTable.setAttribute("id", "waitingPackagesTable");
-    showListDom.appendChild(createTable);
+    createWaitingToUploadTable(showListDom, addPackagesNum)
 
-    var thead = document.createElement('thead');
-    createTable.appendChild(thead);
-
-    thead.appendChild(document.createElement("th")).appendChild(document.createTextNode("Type"))
-    thead.appendChild(document.createElement("th")).appendChild(document.createTextNode("Email"))
-    thead.appendChild(document.createElement("th")).appendChild(document.createTextNode("Remove"))
-
-    console.log(addPackagesNum);
+    const table = document.getElementById('waitingPackagesTable')
 
     var letterNum = 0;
     var parcelNum = 0;
@@ -197,7 +199,7 @@ function showAllAddPackages() {
 
         var userCIS = package.cis
 
-        var row = createTable.insertRow(-1);
+        var row = table.insertRow(-1);
 
         var type = row.insertCell(0);
         var email = row.insertCell(1);
@@ -210,7 +212,95 @@ function showAllAddPackages() {
 
     }
 
-    showListDom.innerHTML += `</tbody></table> <br> ${letterNum} of letters, and ${parcelNum} of parcels`
+    showListDom.innerHTML += `</tbody></table> <br> ${letterNum} letters, and ${parcelNum} parcels`
+
+    showListDom.innerHTML += `<br><button type="button" class="btn btn-warning" id="uploadToFirebase" onclick="uploadPackagesFirebase()">Upload packages data to database</button>`
+
+    removeStudent(addPackagesNum)
+
+}
+
+function createWaitingToUploadTable(showListDom, addPackagesNum) {
+
+    showListDom.innerHTML = `<h3>${addPackagesNum} packages are waiting to be add to database:</h3>
+    <h6>(emails will be send out at 3pm each day)</h6>`
+
+    var createTable = document.createElement("table");
+    createTable.classList.add("table");
+    createTable.classList.add("table-bordered");
+    createTable.setAttribute("id", "waitingPackagesTable");
+    showListDom.appendChild(createTable);
+
+    var thead = document.createElement('thead');
+    createTable.appendChild(thead);
+
+    thead.appendChild(document.createElement("th")).appendChild(document.createTextNode("Type"))
+    thead.appendChild(document.createElement("th")).appendChild(document.createTextNode("Email"))
+    thead.appendChild(document.createElement("th")).appendChild(document.createTextNode("Remove"))
+}
+
+
+function uploadPackagesFirebase() {
+
+    const uploadedPackagesNum = addPackages.length
+
+    // call firebase to upload
+    addPackageFirebase(addPackages)
+
+    // clear array
+    addPackages = []
+    addPackagesNum = addPackages.length
+    const showListDom = document.getElementById("showAllAddPackages")
+
+    createWaitingToUploadTable(showListDom, addPackagesNum)
+
+    const table = document.getElementById('waitingPackagesTable')
+
+    var row = table.insertRow(-1);
+
+    var num = row.insertCell(0);
+    var first = row.insertCell(1);
+
+    num.innerHTML = ""
+    first.colSpan = "2"
+    first.innerHTML = `<h4>${uploadedPackagesNum} packages data successfully uploaded to database 🙌</h4>`
+
+}
+
+
+function removeStudent(addPackagesNum) {
+
+    for (let i = 0; i < addPackagesNum; i++) {
+        document.getElementById(`removeStudent-${i}`).addEventListener("click", function (event) {
+            let id = document.getElementById(`removeStudent-${i}`).innerHTML.split('*')
+            let arrayIndex = id[1]
+
+            var package = addPackages[arrayIndex]
+
+            document.getElementById("removeModalText").innerHTML = `You are going to remove
+            <br>Name: <b>${database[package.cis]["email"]}</b>
+            <br>CIS: <b>${package.cis}</b>
+            <br>Package Type: <b>${package.type}</b>
+            `
+            showRemoveModal()
+
+            document.getElementById("removeModalArrayIndex").innerHTML = `*${arrayIndex}*`
+
+        });
+    };
+
+};
+
+function removePackage() {
+
+    let arrayIndexText = document.getElementById("removeModalArrayIndex").innerHTML.split('*')
+    let arrayIndex = JSON.parse(arrayIndexText[1])
+
+    addPackages.splice(arrayIndex, 1)
+
+    showAllAddPackages()
+
+    closeRemoveModal()
 }
 
 
@@ -220,10 +310,38 @@ function clearSearch() {
     document.getElementById("searchTextBox").value = ''
 
     const table = document.getElementById("studentTable");
+
     while (table.rows.length > 1) {
         table.deleteRow(1);
     }
 
+    var row = table.insertRow(-1);
+
+    var num = row.insertCell(0);
+    var first = row.insertCell(1);
+    var last = row.insertCell(2);
+
+    num.innerHTML = ""
+    first.colSpan = "2"
+    first.innerHTML = "<h4>🥳 More happiness to come 📦</h4>"
+    last.colSpan = "2"
+    last.innerHTML = "<h4>👆🏻 Enter the surname above to find the next happiness 😄</h4>"
+
+
+}
+
+
+
+function showRemoveModal() {
+    document.getElementById("backdrop").style.display = "block"
+    document.getElementById("removePackageModal").style.display = "block"
+    document.getElementById("removePackageModal").classList.add("show")
+}
+
+function closeRemoveModal() {
+    document.getElementById("backdrop").style.display = "none"
+    document.getElementById("removePackageModal").style.display = "none"
+    document.getElementById("removePackageModal").classList.remove("show")
 }
 
 function showModal() {
@@ -248,20 +366,18 @@ function clearBtnPackage() {
 }
 
 // Get the modal
-var modal = document.getElementById('selectPackageTypeModal');
+var selectModal = document.getElementById('selectPackageTypeModal');
+var removeModal = document.getElementById('selectPackageTypeModal');
+
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
-  if (event.target == modal) {
+  if (event.target == selectModal) {
     closeModal()
+  }
+  if (event.target == removeModal) {
+    closeRemoveModal()
   }
 }
 
-
-// searchLastName = 'che'
-
-// const searchStudent = findStudent(searchLastName)
-
-// console.log(searchStudent);
-// const
 

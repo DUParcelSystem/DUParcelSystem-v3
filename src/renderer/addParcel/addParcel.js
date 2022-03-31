@@ -1,26 +1,16 @@
 const { database, findStudent } = require('../readJSON.js');
-const addPackageFirebase = require('../firebase.js');
+const { addPackageFirebase } = require('../firebase.js');
 const { serverTimestamp } = require('firebase/firestore');
 const fullName = require('fullname');
 require('dotenv').config();
 
+
 document.getElementById("windowtitle").innerHTML = process.env.COLLEGE;
 document.getElementById("title").innerHTML = process.env.COLLEGE;
 
-// const arrayIndex = function (event) {
-//     if (event.key === "Enter") {
-//         event.preventDefault();
-//         getSearchLastName()
-//     }
-
-//     if (event.keyCode >= 49 && event.keyCode <= 57) {
-//         const index = event.key - 1
-//         console.log(event.key);
-//         return index
-//     }
-// }
 
 var addPackages = []
+var searchStudent = []
 
 var pcUserName;
 (async () => {
@@ -37,6 +27,7 @@ document.getElementById("searchTextBox").addEventListener("keypress", function (
     if (event.keyCode >= 49 && event.keyCode <= 57) {
         const index = event.key - 1
         console.log(event.key);
+        console.log(searchStudent[index]);
         return index
     }
 });
@@ -55,7 +46,7 @@ function getSearchLastName() {
     const searchLastName = document.getElementById("searchTextBox").value;
     const checkBox = document.getElementById("staffCheckBox").checked;
 
-    const searchStudent = findStudent(searchLastName, checkBox)
+    searchStudent = findStudent(searchLastName, checkBox)
 
     const searchStudentNum = searchStudent.length
 
@@ -111,6 +102,8 @@ function showStudentsName(searchStudent, searchStudentNum) {
         select.innerHTML = `<button type="button" id="selectStudent-${i}" class="btn btn-primary">Select<p hidden>*${i}*</p></button>`;
 
     }
+
+
 };
 
 

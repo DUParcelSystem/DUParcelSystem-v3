@@ -1,39 +1,30 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('path')
+const config = require('config');
+const EventEmitter = require('events')
+
+const currentCollege = config.get('currentCollege');
+const displayCollegeName = config.get('displayCollegeName');
+const loadingEvents = new EventEmitter()
 
 function createWindow() {
+
+    console.log("load every time");
     const win = new BrowserWindow({
         // width: 800,
         // height: 600,
+        show: false,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
         }
     })
 
+
+
     //   ipcMain.on('collectParcelPage', (event) => {
     //     console.log("You are on collect parcel");
     //   })
-    //   ipcMain.on('addParcelPage', (event) => {
-    //     console.log("You are on add parcel");
-    //   })
-    //   ipcMain.on('viewParcelsPage', (event) => {
-    //     console.log("You are on view parcels");
-    //   })
-    //   ipcMain.on('settingsPage', (event) => {
-    //     console.log("You are on setting");
-    //   })
-
-    var currentPage = ""
-
-    win.webContents.on('did-navigate', (event, url, httpResponseCode, httpStatusText) => {
-        const urlArray = url.split("/")
-        const htmlText = urlArray[urlArray.length - 1]
-        currentPage = htmlText.replace(".html", "")
-
-        console.log(currentPage);
-
-    })
 
 
     win.loadFile('src/renderer/collectParcel/collectParcel.html')
@@ -42,11 +33,47 @@ function createWindow() {
 
     win.maximize();
 
-    win.webContents.on('did-finish-load', function () {
-        const callNFCReader = require('../readNFC.js');
-        callNFCReader(win, currentPage)
+    win.setTitle(displayCollegeName)
+
+    win.on('did-start-loading', (event) => {
+        // contents.savePage(fullPath, saveType)​
+
+        // console.log("did start loading");
+      });
+
+    win.on('page-title-updated', (event) => {
+        event.preventDefault();
+      });
+
+      win.once('ready-to-show', () => {
+        // console.log("once");
         win.show()
-    });
+        const callNFCReader = require('../readNFC.js');
+        callNFCReader(win)
+      })
+
+    //   win.on('close', e => {
+    //     e.preventDefault()
+    //     dialog.showMessageBox({
+    //       type: 'info',
+    //       buttons: ['Ok', 'Exit'],
+    //       cancelId: 1,
+    //       defaultId: 0,
+    //       title: 'Warning',
+    //       detail: 'Hey, wait! There\'s something you should know...'
+    //     }).then(({ response, checkboxChecked }) => {
+    //       console.log(`response: ${response}`)
+    //       if (response) {
+    //         win.destroy()
+    //         app.quit()
+    //       }
+    //     })
+    //   })
+
+    // win.webContents.on('did-finish-load', function () {
+
+    //     console.log("loaded");
+    // });
 
 }
 
@@ -60,11 +87,18 @@ app.whenReady().then(() => {
     })
 })
 
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit()
-    }
-})
+// app.on('window-all-closed', () => {
+//     // if (process.platform !== 'darwin') {
+//         app.quit()
+//     // }
+// })
+
+// app.on('before-quit', () => {
+//     setTimeout(myGreeting, 5000)
+//     console.log("before quit");
+// })
+
+
 
 
 

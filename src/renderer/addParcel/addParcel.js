@@ -1,26 +1,17 @@
 const { database, findStudent } = require('../readJSON.js');
-const addPackageFirebase = require('../firebase.js');
+const { addPackageFirebase } = require('../firebase.js');
 const { serverTimestamp } = require('firebase/firestore');
 const fullName = require('fullname');
 require('dotenv').config();
 
+
 document.getElementById("windowtitle").innerHTML = process.env.COLLEGE;
 document.getElementById("title").innerHTML = process.env.COLLEGE;
 
-// const arrayIndex = function (event) {
-//     if (event.key === "Enter") {
-//         event.preventDefault();
-//         getSearchLastName()
-//     }
-
-//     if (event.keyCode >= 49 && event.keyCode <= 57) {
-//         const index = event.key - 1
-//         console.log(event.key);
-//         return index
-//     }
-// }
 
 var addPackages = []
+var searchStudent = []
+var inModal = false
 
 var pcUserName;
 (async () => {
@@ -28,22 +19,76 @@ var pcUserName;
 })();
 
 // avoid refresh page when enter if press
-document.getElementById("searchTextBox").addEventListener("keypress", function (event) {
+document.getElementById("searchTextBox").addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
         event.preventDefault();
         getSearchLastName()
     }
 
-    if (event.keyCode >= 49 && event.keyCode <= 57) {
-        const index = event.key - 1
-        console.log(event.key);
-        return index
+    if (event.key === "`") {
+        const checkBoxDom = document.getElementById("staffCheckBox")
+        if (checkBoxDom.checked == false) {
+            checkBoxDom.checked = true;
+        } else if (checkBoxDom.checked == true) {
+            checkBoxDom.checked = false;
+        }
+        getSearchLastName()
     }
 });
 
+document.addEventListener("keydown", function (event) {
+
+    if (event.key >= "1" && event.key <= "9") {
+        const index = event.key - 1
+        const studentInfo = searchStudent[index]
+
+        if (studentInfo && !inModal) {
+
+            document.getElementById("modalText").innerHTML = `You have selected
+            <br>Name: <b>${studentInfo.email}</b>
+            <br>Type: <b>${studentInfo.type}</b>
+            <br>CIS: <b>${studentInfo.cis}</b>
+            `
+            showModal()
+
+            document.getElementById("modalStudInfo").innerHTML = `*${JSON.stringify(studentInfo)}*`
+
+        }
+
+    }
+});
+
+document.getElementById("selectPackageTypeModal").addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+        closeModal()
+    }
+
+    if (event.key == "p" || event.key == "P") {
+        document.getElementById("btnParcel").checked = true;
+    }
+    if (event.key == "l" || event.key == "L") {
+        document.getElementById("btnLetter").checked = true;
+    }
+    if (event.key === "Enter") {
+        event.preventDefault();
+        selectPackage()
+    }
+})
+
+document.getElementById("removePackageModal").addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+        closeRemoveModal()
+    }
+    if (event.key === "Enter") {
+        event.preventDefault();
+        removePackage()
+    }
+
+})
+
 
 function isNumberKey(event) {
-    if (event.keyCode >= 49 && event.keyCode <= 57) {
+    if ((event.key >= "1" && event.key <= "9") || (event.key == "`")) {
         return false;
     }
     return true;
@@ -55,7 +100,7 @@ function getSearchLastName() {
     const searchLastName = document.getElementById("searchTextBox").value;
     const checkBox = document.getElementById("staffCheckBox").checked;
 
-    const searchStudent = findStudent(searchLastName, checkBox)
+    searchStudent = findStudent(searchLastName, checkBox)
 
     const searchStudentNum = searchStudent.length
 
@@ -111,6 +156,8 @@ function showStudentsName(searchStudent, searchStudentNum) {
         select.innerHTML = `<button type="button" id="selectStudent-${i}" class="btn btn-primary">Select<p hidden>*${i}*</p></button>`;
 
     }
+
+
 };
 
 
@@ -139,6 +186,7 @@ function selectStudent(searchStudent, searchStudentNum) {
 
 
 function selectPackage() {
+
     let studInfoText = document.getElementById("modalStudInfo").innerHTML.split('*')
     let studInfo = JSON.parse(studInfoText[1])
 
@@ -338,6 +386,7 @@ function showRemoveModal() {
     document.getElementById("backdrop").style.display = "block"
     document.getElementById("removePackageModal").style.display = "block"
     document.getElementById("removePackageModal").classList.add("show")
+    document.getElementById("removePackageModal").focus();
 }
 
 function closeRemoveModal() {
@@ -351,12 +400,16 @@ function showModal() {
     document.getElementById("backdrop").style.display = "block"
     document.getElementById("selectPackageTypeModal").style.display = "block"
     document.getElementById("selectPackageTypeModal").classList.add("show")
+    document.getElementById("selectPackageTypeModal").focus();
+    inModal = true
 }
 
 function closeModal() {
     document.getElementById("backdrop").style.display = "none"
     document.getElementById("selectPackageTypeModal").style.display = "none"
     document.getElementById("selectPackageTypeModal").classList.remove("show")
+    document.getElementById("searchTextBox").focus();
+    inModal = false
     clearBtnPackage()
 }
 

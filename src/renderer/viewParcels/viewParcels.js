@@ -4,6 +4,10 @@ const { getFirestore, collection, query, where, getDoc, doc, setDoc, getDocs,
 const { getAnalytics } = require("firebase/analytics");
 require('dotenv').config();
 
+const { ipcRenderer } = require("electron")
+ipcRenderer.send('viewParcelsPage')
+
+
 const firebaseConfig = {
   apiKey: process.env.apiKey,
   authDomain: process.env.authDomain,

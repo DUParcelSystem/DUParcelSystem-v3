@@ -1,81 +1,172 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <title id="windowtitle">DU Parcel System</title>
-    <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./style.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>DU Parcel System</title>
+  <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./style.css" />
+  <script src="../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body>
-    <nav class="navbar navbar-expand navbar-light bg-light">
-      <div class="container-fluid">
-        <a class="navbar-brand mb-0 h1" href="#" id="title">❄️ John Snow Parcel System 📦</a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav nav-pills me-auto">
-            <li class="nav-item">
-              <a class="nav-link active text-white" aria-current="page" href="#">Collect</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="../viewParcels/viewParcels.html">View</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="../addParcel/addParcel.html">Add</a>
-            </li>
-          </ul>
-          <ul class="navbar-nav d-flex flex-row">
-            <a class="nav-link" href="../settings/settings.html">Setting</a>
-          </ul>
-        </div>
+  <nav class="navbar navbar-expand navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand mb-0 h1" href="#" id="title">DU Parcel System</a>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav nav-pills me-auto">
+          <li class="nav-item">
+            <a class="nav-link active text-white" aria-current="page" href="#">Collect</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../viewParcels/viewParcels.html">View</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../addParcel/addParcel.html">Add</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav d-flex flex-row">
+          <a class="nav-link" href="../settings/settings.html">Setting</a>
+        </ul>
       </div>
-    </nav>
-
-    <div class="alert alert-primary" role="alert">
-      A simple primary alert—check it out!
-
-      Collect Parcel
     </div>
+  </nav>
 
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          <form class="d-flex">
-            <input id="searchTextBox" class="form-control me-2" type="search" placeholder="CIS" aria-label="Search">
-          </form>
-        </div>
-        <div class="col">
-          <h6 class="notbold">CIS</h6>
-          <h4 id="cisText">qwwk95</h4>
-        </div>
-        <div class="col">
-          <p class="text-end" id="nfcReaderText">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill text-warning" viewBox="0 0 16 16">
-              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
-            </svg> checking is NFC reader connected...
+  <div class="container-xl pt-3">
+    <div class="row">
+      <div class="col-6">
+        <form class="d-flex" id="searchCISForm">
+          <input class="form-control me-2" type="search" placeholder="Type CIS here..." aria-label="Search"
+            maxlength="6" id="searchCISSearchBox">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+      </div>
+      <div class="col text-end">
+        <h6 class="notbold">CIS</h6>
+        <h4 id="cisText">qwwk95</h4>
+      </div>
+      <div class="col">
+        <p class="text-end" id="nfcReaderText">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+            class="bi bi-exclamation-circle-fill text-warning" viewBox="0 0 16 16">
+            <path
+              d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+          </svg> checking is NFC reader connected...
         </p>
-        </div>
-      </div>
-
-      <div class="row pt-3">
-        <div class="col">
-          <h4 class="notbold">Last Name</h4>
-          <h1 id="firstNameText">Cheung</h1>
-        </div>
-        <div class="col">
-          <h4 class="notbold">First Name</h4>
-          <h1 id="lastNameText">Aaron</h1>
-        </div>
-        <div class="col">
-          <h4 class="notbold">Number of Parcel 📦 </h4>
-          <h1 id="numberOfParcelText">1</h1>
-        </div>
-        <div class="col">
-          <h4 class="notbold">Number of Letter ✉️ </h4>
-          <h1 id="numberOfLetterText">3</h1>
-        </div>
       </div>
     </div>
+
+    <div class="row pt-3">
+      <div class="col">
+        <h4 class="notbold">Last Name</h4>
+        <h1 id="firstNameText">Cheung</h1>
+      </div>
+      <div class="col">
+        <h4 class="notbold">First Name</h4>
+        <h1 id="lastNameText">Aaron</h1>
+      </div>
+      <div class="col">
+        <h4 class="notbold">Number of Parcel 📦 </h4>
+        <h1 id="numberOfParcelText">1</h1>
+      </div>
+      <div class="col">
+        <h4 class="notbold">Number of Letter ✉️ </h4>
+        <h1 id="numberOfLetterText">3</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-xl" id="showUncollectedPackages">
+
+    <div id="accordion">
+
+      <div class="card text-dark bg-warning mt-2">
+
+        <div class="card-header btn btn-lin" id="headingOne" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+          aria-expanded="true" aria-controls="collapseOne">
+
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-2 text-start">
+                <h5 class="card-title">Parcel</h5>
+              </div>
+
+              <div class="col-sm-6 text-start">
+                <p class="card-text">Arrived on: 30 March 2022 12:00pm</p>
+              </div>
+
+              <div class="col-sm-4 text-end">
+                <button type="button" class="btn btn-danger" onclick="cannotFindPackageToUncollected()">Uncollected</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+          <div class="card-body">
+            <div class="container">
+              <div class="row border-bottom">
+                <div class="col">
+                  Type: Parcel
+                  <br>
+                  Parcel no: C143
+                  <br>
+                  Reminder emails: 5 days since arrived (xx April 2022 15:00)
+                </div>
+                <!-- <div class="col">
+                  2 of 2
+                </div> -->
+              </div>
+              <div class="row">
+                <div class="col">
+                  Arrived date: 30 March 2022 10:30
+                  <br>
+                  Arrived by: Stacy
+                  <br>
+                  Notified email sent: 30 March 2022 15:00
+                </div>
+                <div class="col">
+                  Collected date: 31 March 2022 17:30
+                  <br>
+                  Give out by: Peter
+                  <br>
+                  Collected: Yes
+                </div>
+              </div>
+
+
+              <!-- <div class="row">
+                <div class="col-sm-2 text-start">
+                  <h5 class="card-title">Parcel</h5>
+                </div>
+
+                <div class="col-sm-6 text-start">
+                  <p class="card-text">Arrived on: 30 March 2022 12:00pm</p>
+                </div>
+
+                <div class="col-sm-4 text-end">
+                  <a href="#" class="btn btn-danger">Uncollected</a>
+                </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+
+
+
+
+    </div>
+
+
+
 
     <script src="./collectParcel.js"></script>
 </body>
+
 </html>

@@ -57,19 +57,50 @@ async function addPackageFirebase(addPackages) {
 }
 
 
+// get all uncollected parcels from specific users
+async function getOneStuAllUncollectedPackages(searchCIS) {
+
+    var uncollectedPackages = {}
+    const uncollectedPackagesFirebase = query(collection(db, "Test College", searchCIS, "packages"), where('collected', '==', false));
+
+    const querySnapshot = await getDocs(uncollectedPackagesFirebase);
+    querySnapshot.forEach((doc) => {
+
+        docID = doc.id
+        uncollectedPackages[docID] = doc.data()
+
+    });
+
+    return uncollectedPackages
+
+}
 
 
-// get all not-collected parcels from all users
-// (async () => {
-//     // console.log("hiiiii");
-//     const museums = query(collectionGroup(db, 'packages'), where('collected', '==', false));
 
-//     const querySnapshot = await getDocs(museums);
+// get all uncollected parcels from all users
+// async function getAllUncollectedPackages(searchCIS) {
+
+//     var uncollectedPackages = {}
+//     const uncollectedPackagesFirebase = query(collectionGroup(db, 'packages'), where('collected', '==', false));
+
+//     const querySnapshot = await getDocs(uncollectedPackagesFirebase);
 //     querySnapshot.forEach((doc) => {
+
+//         docID = doc.id
+
+//         uncollectedPackages[docID] = doc.data()
+
 //         console.log(doc.id, ' => ', doc.data());
+
+//         // console.log(uncollectedPackages);
+
 //     });
-//     // console.log("hi");
-// })()
+
+//     console.log(uncollectedPackages);
+
+//     // return
+
+// }
 
 
 
@@ -275,4 +306,4 @@ async function addPackageFirebase(addPackages) {
 
 
 
-module.exports = addPackageFirebase;
+module.exports = { addPackageFirebase, getOneStuAllUncollectedPackages };

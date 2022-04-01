@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <title id="windowtitle">DU Parcel System</title>
     <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <!-- <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js">
-    <link rel="stylesheet" href="../../../node_modules/bootstrap/scss/bootstrap.scss"> -->
+    <script src="../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -55,11 +54,11 @@
           </div>
 
           <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-            <input type="radio" class="btn-check" name="btnPackage" id="btnradio1" autocomplete="off" value="Parcel">
-            <label class="btn btn-outline-primary" for="btnradio1">Parcel</label>
+            <input type="radio" class="btn-check" name="btnPackage" id="btnParcel" autocomplete="off" value="Parcel">
+            <label class="btn btn-outline-primary" for="btnParcel">Parcel</label>
 
-            <input type="radio" class="btn-check" name="btnPackage" id="btnradio2" autocomplete="off" value="Letter">
-            <label class="btn btn-outline-primary" for="btnradio2">Letter</label>
+            <input type="radio" class="btn-check" name="btnPackage" id="btnLetter" autocomplete="off" value="Letter">
+            <label class="btn btn-outline-primary" for="btnLetter">Letter</label>
           </div>
         </div>
 
@@ -86,7 +85,6 @@
         <div class="modal-body">
           <p id="removeModalText"></p>
           <p id="removeModalArrayIndex" hidden></p>
-
         </div>
 
         <div class="modal-footer">
@@ -100,25 +98,25 @@
   <div class="modal-backdrop fade show" id="backdrop" style="display: none;"></div>
 
 
-  <div class="container-lg pt-3">
+  <div class="container-xl pt-3">
     <div class="row">
       <div class="col-sm">
         <form class="d-flex">
           <input id="searchTextBox" class="form-control me-2" type="text" placeholder="Last Name" aria-label="Search"
-           onpropertychange onkeyup onpaste oninput="getSearchLastName()" onkeypress="return isNumberKey(event)">
+           onpropertychange onkeyup onpaste oninput="getSearchLastName()" onkeydown="return isNumberKey(event)" autofocus>
         </form>
       </div>
 
       <div class="col-sm">
         <div class="form-check">
           <input class="form-check-input" type="checkbox" value="" id="staffCheckBox" onclick='getSearchLastName()'/>
-          <label class="form-check-label" for="staffCheckBox">Include Staff</label>
+          <label class="form-check-label" for="staffCheckBox">Include Staff (press `)</label>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="container-lg pt-3">
+  <div class="container-xl pt-3">
 
     <table class="table table-bordered" id="studentTable">
       <thead class="thead-dark">
@@ -149,7 +147,7 @@
     </table>
   </div>
 
-  <div class="container-lg pt-3">
+  <div class="container-xl pt-3">
   <p id="showAllAddPackages"></p>
   </div>
 

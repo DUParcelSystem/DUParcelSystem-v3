@@ -1,11 +1,9 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('path')
 const config = require('config');
-const EventEmitter = require('events')
 
 const currentCollege = config.get('currentCollege');
 const displayCollegeName = config.get('displayCollegeName');
-const loadingEvents = new EventEmitter()
 
 function createWindow() {
 
@@ -50,6 +48,7 @@ function createWindow() {
         win.show()
         const callNFCReader = require('../readNFC.js');
         callNFCReader(win)
+
       })
 
     //   win.on('close', e => {

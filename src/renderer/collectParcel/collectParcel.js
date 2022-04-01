@@ -1,6 +1,6 @@
 // const addPackageFirebase = require('../readNFC.js');
 const { database } = require('../readJSON.js');
-// const { getOneStuAllUncollectedPackages } = require('../firebase.js');
+const { getOneStuAllUncollectedPackages } = require('../firebase.js');
 const { ipcRenderer } = require("electron")
 const config = require('config');
 const currentCollege = config.get('currentCollege');

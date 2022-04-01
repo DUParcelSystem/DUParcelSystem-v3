@@ -24,11 +24,48 @@ document.getElementById("searchTextBox").addEventListener("keypress", function (
         getSearchLastName()
     }
 
+    console.log("key", event.keyCode);
+
     if (event.keyCode >= 49 && event.keyCode <= 57) {
         const index = event.key - 1
         console.log(event.key);
         console.log(searchStudent[index]);
-        return index
+
+        const studentInfo = searchStudent[index]
+
+        if (studentInfo) {
+
+            document.getElementById("searchTextBox").disabled = true;
+
+            document.getElementById("modalText").innerHTML = `You have selected
+            <br>Name: <b>${studentInfo.email}</b>
+            <br>Type: <b>${studentInfo.type}</b>
+            <br>CIS: <b>${studentInfo.cis}</b>
+            `
+            showModal()
+
+            document.addEventListener("keypress", function (event) {
+                if (event.keyCode == 80 || event.keyCode == 112) {
+                    document.getElementById("btnParcel").checked = true;
+                }
+                if (event.keyCode == 76 || event.keyCode == 108) {
+                    document.getElementById("btnLetter").checked = true;
+                }
+                if (event.key === "Enter") {
+                    console.log('Enter');
+                    selectPackage()
+                    console.log("hi");
+                }
+
+            })
+
+        } else {
+            console.log("NULL");
+            document.getElementById("searchTextBox").disabled = false;
+
+
+        }
+
     }
 });
 
@@ -347,6 +384,7 @@ function showModal() {
 }
 
 function closeModal() {
+    document.getElementById("searchTextBox").disabled = false;
     document.getElementById("backdrop").style.display = "none"
     document.getElementById("selectPackageTypeModal").style.display = "none"
     document.getElementById("selectPackageTypeModal").classList.remove("show")

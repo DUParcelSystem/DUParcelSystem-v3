@@ -54,10 +54,10 @@
           </div>
 
           <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-            <input type="radio" class="btn-check" name="btnPackage" id="btnradio1" autocomplete="off" value="Parcel">
+            <input type="radio" class="btn-check" name="btnPackage" id="btnParcel" autocomplete="off" value="Parcel">
             <label class="btn btn-outline-primary" for="btnradio1">Parcel</label>
 
-            <input type="radio" class="btn-check" name="btnPackage" id="btnradio2" autocomplete="off" value="Letter">
+            <input type="radio" class="btn-check" name="btnPackage" id="btnLetter" autocomplete="off" value="Letter">
             <label class="btn btn-outline-primary" for="btnradio2">Letter</label>
           </div>
         </div>
@@ -104,7 +104,7 @@
       <div class="col-sm">
         <form class="d-flex">
           <input id="searchTextBox" class="form-control me-2" type="text" placeholder="Last Name" aria-label="Search"
-           onpropertychange onkeyup onpaste oninput="getSearchLastName()" onkeypress="return isNumberKey(event)">
+           onpropertychange onkeyup onpaste oninput="getSearchLastName()" onkeypress="return isNumberKey(event)" autofocus>
         </form>
       </div>
 

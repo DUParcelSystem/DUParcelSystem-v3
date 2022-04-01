@@ -13,11 +13,11 @@ function createWindow() {
         // height: 600,
         show: false,
         webPreferences: {
+            preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
             contextIsolation: false
         }
     })
-
 
 
     //   ipcMain.on('collectParcelPage', (event) => {
@@ -48,7 +48,6 @@ function createWindow() {
         win.show()
         const callNFCReader = require('../readNFC.js');
         callNFCReader(win)
-
       })
 
     //   win.on('close', e => {

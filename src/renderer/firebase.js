@@ -1,8 +1,10 @@
 const { initializeApp } = require('firebase/app');
 const { getFirestore, collection, query, where, getDoc, doc, setDoc, getDocs,
-    updateDoc, addDoc, serverTimestamp, collectionGroup } = require('firebase/firestore');
+    updateDoc, addDoc, serverTimestamp, collectionGroup, orderBy, limit } = require('firebase/firestore');
 // const { getAnalytics } = require("firebase/analytics");
+const { ipcMain } = require('electron')
 require('dotenv').config();
+
 
 const firebaseConfig = {
   apiKey: process.env.apiKey,
@@ -60,16 +62,28 @@ async function addPackageFirebase(addPackages) {
 // get all uncollected parcels from specific user
 async function getOneStuAllUncollectedPackages(searchCIS) {
 
-    var uncollectedPackages = {}
+    var uncollectedPackages = []
     const uncollectedPackagesFirebase = query(collection(db, "Test College", searchCIS, "packages"), where('collected', '==', false));
 
     const querySnapshot = await getDocs(uncollectedPackagesFirebase);
     querySnapshot.forEach((doc) => {
 
+        packageInfo = doc.data()
         docID = doc.id
-        uncollectedPackages[docID] = doc.data()
+        packageInfo["id"] = docID
+        uncollectedPackages.push(packageInfo)
 
     });
+
+    uncollectedPackages.sort(function (a, b) {
+        var aLastName = a.arrivedTime;
+        var bLastName = b.arrivedTime;
+        if (aLastName > bLastName) {
+            return 1;
+        } else if (aLastName < bLastName) {
+            return -1;
+        }
+    })
 
     return uncollectedPackages
 

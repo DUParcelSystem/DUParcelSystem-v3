@@ -33,7 +33,34 @@
     </div>
   </nav>
 
-  <div class="container-xl pt-3">
+  <!-- <div class="modal fade" id="cannotFindPackageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header">
+
+          <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeRemoveModal()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p id="removeModalText"></p>
+          <p id="removeModalArrayIndex" hidden></p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeRemoveModal()">Cancel</button>
+          <button type="button" class="btn btn-danger" onclick="removePackage()">Remove</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop fade show" id="backdrop" style="display: none;"></div> -->
+
+  <div class="container-xl pt-3 mb-2">
     <div class="row">
       <div class="col-6">
         <form class="d-flex" id="searchCISForm">
@@ -44,7 +71,7 @@
       </div>
       <div class="col text-end">
         <h6 class="notbold">CIS</h6>
-        <h4 id="cisText">qwwk95</h4>
+        <h4 id="cisText">N/A</h4>
       </div>
       <div class="col">
         <p class="text-end" id="nfcReaderText">
@@ -60,44 +87,46 @@
     <div class="row pt-3">
       <div class="col">
         <h4 class="notbold">Last Name</h4>
-        <h1 id="firstNameText">Cheung</h1>
+        <h1 id="firstNameText">Waiting</h1>
       </div>
       <div class="col">
         <h4 class="notbold">First Name</h4>
-        <h1 id="lastNameText">Aaron</h1>
+        <h1 id="lastNameText">for</h1>
       </div>
       <div class="col">
         <h4 class="notbold">Number of Parcel 📦 </h4>
-        <h1 id="numberOfParcelText">1</h1>
+        <h1 id="numberOfParcelText">student</h1>
       </div>
       <div class="col">
         <h4 class="notbold">Number of Letter ✉️ </h4>
-        <h1 id="numberOfLetterText">3</h1>
+        <h1 id="numberOfLetterText">card</h1>
       </div>
     </div>
   </div>
 
-  <div class="container-xl" id="showUncollectedPackages">
-
+  <div class="container-xl border-top" id="showUncollectedPackages">
+    <h3 class="mt-2" id="allUncollectedPackageTitle">0 uncollected packages</h3>
     <div id="accordion">
 
-      <div class="card text-dark bg-warning mt-2">
+      <div class="card text-white bg-success mt-2">
 
-        <div class="card-header btn btn-lin" id="headingOne" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-          aria-expanded="true" aria-controls="collapseOne">
+        <div class="card-header btn btn-lin text-white" id="headingOne" data-bs-toggle="collapse"
+          data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
 
           <div class="container">
             <div class="row">
               <div class="col-sm-2 text-start">
-                <h5 class="card-title">Parcel</h5>
+                <h4 class="card-title">Parcel</h4>
               </div>
-
-              <div class="col-sm-6 text-start">
+              <div class="col-sm-2 text-start">
+                <h4 class="card-title">C149</h4>
+              </div>
+              <div class="col-sm-4 text-start">
                 <p class="card-text">Arrived on: 30 March 2022 12:00pm</p>
               </div>
-
               <div class="col-sm-4 text-end">
-                <button type="button" class="btn btn-danger" onclick="cannotFindPackageToUncollected()">Uncollected</button>
+                <button type="button" class="btn btn-danger"
+                  onclick="cannotFindPackageToUncollected()">Uncollected</button>
               </div>
             </div>
           </div>
@@ -107,7 +136,7 @@
         <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
           <div class="card-body">
             <div class="container">
-              <div class="row border-bottom">
+              <div class="row border-bottom border-dark">
                 <div class="col">
                   Type: Parcel
                   <br>
@@ -115,9 +144,6 @@
                   <br>
                   Reminder emails: 5 days since arrived (xx April 2022 15:00)
                 </div>
-                <!-- <div class="col">
-                  2 of 2
-                </div> -->
               </div>
               <div class="row">
                 <div class="col">
@@ -130,34 +156,73 @@
                 <div class="col">
                   Collected date: 31 March 2022 17:30
                   <br>
-                  Give out by: Peter
+                  Given out by: Peter
                   <br>
                   Collected: Yes
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <!-- <div class="card text-white bg-success mt-2">
 
-              <!-- <div class="row">
-                <div class="col-sm-2 text-start">
-                  <h5 class="card-title">Parcel</h5>
+        <div class="card-header btn btn-lin text-white" id="headingTwo" data-bs-toggle="collapse"
+          data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-2 text-start">
+                <h4 class="card-title">Parcel</h4>
+              </div>
+              <div class="col-sm-2 text-start">
+                <h4 class="card-title">C149</h4>
+              </div>
+              <div class="col-sm-4 text-start">
+                <p class="card-text">Arrived on: 30 March 2022 12:00pm</p>
+              </div>
+              <div class="col-sm-4 text-end">
+                <button type="button" class="btn btn-danger"
+                  onclick="cannotFindPackageToUncollected()">Uncollected</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+          <div class="card-body">
+            <div class="container">
+              <div class="row border-bottom border-dark">
+                <div class="col">
+                  Type: Parcel
+                  <br>
+                  Parcel no: C143
+                  <br>
+                  Reminder emails: 5 days since arrived (xx April 2022 15:00)
                 </div>
-
-                <div class="col-sm-6 text-start">
-                  <p class="card-text">Arrived on: 30 March 2022 12:00pm</p>
+              </div>
+              <div class="row">
+                <div class="col">
+                  Arrived date: 30 March 2022 10:30
+                  <br>
+                  Arrived by: Stacy
+                  <br>
+                  Notified email sent: 30 March 2022 15:00
                 </div>
-
-                <div class="col-sm-4 text-end">
-                  <a href="#" class="btn btn-danger">Uncollected</a>
-                </div> -->
+                <div class="col">
+                  Collected date: 31 March 2022 17:30
+                  <br>
+                  Given out by: Peter
+                  <br>
+                  Collected: Yes
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-
-
-      </div>
-
+      </div> -->
 
 
 
@@ -166,7 +231,12 @@
 
 
 
-    <script src="./collectParcel.js"></script>
+  </div>
+
+
+
+
+  <script src="./collectParcel.js"></script>
 </body>
 
 </html>

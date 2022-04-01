@@ -1,7 +1,7 @@
 const pcsclite = require('@aaroncheung430/pcsclite');
 const pcsc = pcsclite();
 
-function callNFCReader(win, currentPage) {
+function callNFCReader(win) {
 
     var splitUID = ''
     var currentPage = 'collectParcel'

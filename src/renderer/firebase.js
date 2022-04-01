@@ -57,7 +57,7 @@ async function addPackageFirebase(addPackages) {
 }
 
 
-// get all uncollected parcels from specific users
+// get all uncollected parcels from specific user
 async function getOneStuAllUncollectedPackages(searchCIS) {
 
     var uncollectedPackages = {}

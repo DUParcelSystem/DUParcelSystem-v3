@@ -33,32 +33,62 @@
     </div>
   </nav>
 
-  <!-- <div class="modal fade" id="cannotFindPackageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <!-- Modal for cannot find package -->
+  <div class="modal fade" id="cannotFindPackageModal" tabindex="-1" role="dialog" aria-labelledby="cannotFindPackageLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
 
         <div class="modal-header">
 
-          <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeRemoveModal()">
+          <h5 class="modal-title" id="cannotFindPackageLabel">Are you sure?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
 
         <div class="modal-body">
-          <p id="removeModalText"></p>
-          <p id="removeModalArrayIndex" hidden></p>
+          <p id="uncollectModalText"></p>
+          <p id="uncollectModalInfo" hidden></p>
+          <p id="uncollectModalArrayIndex" hidden></p>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeRemoveModal()">Cancel</button>
-          <button type="button" class="btn btn-danger" onclick="removePackage()">Remove</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Cancel</button>
+          <button type="button" class="btn btn-danger" onclick="cannotFindPackageToUncollected()">Uncollect</button>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="modal-backdrop fade show" id="backdrop" style="display: none;"></div> -->
+  <!-- Modal for add Campus Card -->
+  <div class="modal fade" id="addCampusCardModal" tabindex="-1" role="dialog" aria-labelledby="addCampusCardLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header">
+
+          <h5 class="modal-title" id="addCampusCardLabel">Add Campus Card Info</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p id="campusCardUID"></p>
+          <!-- <p id="uncollectModalInfo" hidden></p>
+          <p id="uncollectModalArrayIndex" hidden></p> -->
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Cancel</button>
+          <button type="button" class="btn btn-danger" onclick="cannotFindPackageToUncollected()">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop fade show" id="backdrop" style="display: none;"></div>
+
 
   <div class="container-xl pt-3 mb-2">
     <div class="row">
@@ -104,11 +134,27 @@
     </div>
   </div>
 
-  <div class="container-xl border-top" id="showUncollectedPackages">
-    <h3 class="mt-2" id="allUncollectedPackageTitle">0 uncollected packages</h3>
+  <div class="container-xl border-top pb-3" id="showUncollectedPackages">
+    <div class="container-xl" id="cannotFindContainer" style="display: none">
+      <h3 class="mt-2" id="cannotFindPackageTitle">0 packages were just uncollected</h3>
+        <div id="uncollectedPackages">
+        </div>
+    </div>
+
+    <div class="container-xl">
+      <div class="row">
+        <div class="col-6">
+          <h3 class="mt-2" id="allUncollectedPackageTitle">0 packages were just collected</h3>
+        </div>
+        <div class="col-6 text-end mt-2">
+          <button type="button" class="btn btn-primary" id="show10RecentCollectedPackageBtn" onclick="load10RecentCollectedPackages()">Show 10 recent collected packages</button>
+        </div>
+      </div>
+    </div>
+
     <div id="accordion">
 
-      <div class="card text-white bg-success mt-2">
+      <!-- <div class="card text-white bg-success mt-2">
 
         <div class="card-header btn btn-lin text-white" id="headingOne" data-bs-toggle="collapse"
           data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -126,7 +172,7 @@
               </div>
               <div class="col-sm-4 text-end">
                 <button type="button" class="btn btn-danger"
-                  onclick="cannotFindPackageToUncollected()">Uncollected</button>
+                  onclick="cannotFindPackageToUncollected(event)">Uncollected</button>
               </div>
             </div>
           </div>
@@ -164,7 +210,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- <div class="card text-white bg-success mt-2">
 
@@ -224,19 +270,91 @@
         </div>
       </div> -->
 
+    </div>
+  </div>
 
 
+
+  <div class="container-xl border-top pb-3" id="showCollectedPackages" style="display: none">
+    <div class="container-xl">
+      <div class="row">
+        <div class="col-6">
+          <h3 class="mt-2" id="allCollectedPackageTitle">Recent collected packages</h3>
+        </div>
+        <div class="col-6 text-end">
+          <h4 class="mt-2" id="noResultTitle" style="display: none">No recent packages found</h4>
+        </div>
+      </div>
     </div>
 
+    <div id="accordionConnected">
 
+      <!-- <div class="card text-white bg-secondary mt-2">
 
+        <div class="card-header btn btn-lin text-white" id="headingTwo" data-bs-toggle="collapse"
+          data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
 
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-2 text-start">
+                <h4 class="card-title">Parcel</h4>
+              </div>
+              <div class="col-sm-2 text-start">
+                <h4 class="card-title">C149</h4>
+              </div>
+              <div class="col-sm-4 text-start">
+                <p class="card-text">Arrived on: 30 March 2022 12:00pm</p>
+              </div>
+              <div class="col-sm-4 text-end">
+                <button type="button" class="btn btn-danger"
+                  onclick="cannotFindPackageToUncollected()">Uncollected</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+          <div class="card-body">
+            <div class="container">
+              <div class="row border-bottom border-dark">
+                <div class="col">
+                  Type: Parcel
+                  <br>
+                  Parcel no: C143
+                  <br>
+                  Reminder emails: 5 days since arrived (xx April 2022 15:00)
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  Arrived date: 30 March 2022 10:30
+                  <br>
+                  Arrived by: Stacy
+                  <br>
+                  Notified email sent: 30 March 2022 15:00
+                </div>
+                <div class="col">
+                  Collected date: 31 March 2022 17:30
+                  <br>
+                  Given out by: Peter
+                  <br>
+                  Collected: Yes
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+    </div>
   </div>
+
+
 
 
 
 
   <script src="./collectParcel.js"></script>
 </body>
-
 </html>

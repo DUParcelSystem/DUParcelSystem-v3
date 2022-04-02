@@ -8,6 +8,8 @@ var uncollectedPackages = []
 var totalUncollectedPackageNum = 0
 var num = 0
 var showPackagesId = []
+var cannotFindPackagesArray = []
+var recentCollectToUncollectNum = 0
 
 var pcUserName;
 (async () => {
@@ -67,12 +69,11 @@ function cannotFindPackageToUncollected() {
 
     let packageInfoText = document.getElementById("uncollectModalInfo").innerHTML.split('*')
     let packageInfo = JSON.parse(packageInfoText[1])
-    let packageIndexText = document.getElementById("uncollectModalArrayIndex").innerHTML.split('*')
-    let packageIndex = JSON.parse(packageIndexText[1])
 
-    console.log(packageInfo);
+    document.getElementById(`card-${packageInfo.id}`).style.display = "none";
 
-    document.getElementById(`card-${packageIndex}`).style.display = "none";
+    showPackagesId.push(packageInfo.id)
+    recentCollectToUncollectNum += 1
 
     showCannotFindPackages(packageInfo)
 
@@ -84,7 +85,7 @@ function cannotFindPackageToUncollected() {
 
 function showCannotFindPackages(packageInfo) {
 
-    const i = packageInfo.id
+    const packageId = packageInfo.id
     var packageType = packageInfo.type
 
     if (packageType == "Letter") {
@@ -95,18 +96,25 @@ function showCannotFindPackages(packageInfo) {
 
     times = {
         arrivedTime: packageInfo.arrivedTime.seconds,
-        arrivedEmailSent: packageInfo.arrivedEmailSent.seconds,
+    }
+
+    if (packageInfo.arrivedEmailSent == null) {
+        times["arrivedEmailSent"] = "email not sent yet"
+    } else {
+        times["arrivedEmailSent"] = packageInfo.arrivedEmailSent.seconds
     }
 
     for (const [time, unix] of Object.entries(times)) {
 
-        const firebaseTime = unix * 1000
+        if (Number.isInteger(unix)) {
+            const firebaseTime = unix * 1000
 
-        const firebaseTimeMili = new Date(firebaseTime)
-        const option = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric", hour12: true }
-        const localTimeString = firebaseTimeMili.toLocaleString("en-GB", option)
+            const firebaseTimeMili = new Date(firebaseTime)
+            const option = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric", hour12: true }
+            const localTimeString = firebaseTimeMili.toLocaleString("en-GB", option)
 
-        times[time] = localTimeString
+            times[time] = localTimeString
+        }
     }
 
     var parcelNo = packageInfo.parcelNo
@@ -123,10 +131,13 @@ function showCannotFindPackages(packageInfo) {
 
     document.getElementById("cannotFindContainer").style.display = "block"
 
-    const untitle = document.getElementById("allUncollectedPackageTitle").innerText
-    const untitleArray = untitle.split(" ")
-    const unNum = parseInt(untitleArray[0]) - 1
-    document.getElementById("allUncollectedPackageTitle").innerText = `${unNum} packages were just collected`
+    if (packageInfo.collectedTime == null) {
+        console.log("collected on local");
+        const untitle = document.getElementById("allUncollectedPackageTitle").innerText
+        const untitleArray = untitle.split(" ")
+        const unNum = parseInt(untitleArray[0]) - 1
+        document.getElementById("allUncollectedPackageTitle").innerText = `${unNum} packages were just collected`
+    }
 
     const title = document.getElementById("cannotFindPackageTitle").innerText
     const titleArray = title.split(" ")
@@ -134,9 +145,9 @@ function showCannotFindPackages(packageInfo) {
     document.getElementById("cannotFindPackageTitle").innerText = `${num} packages were just uncollected`
 
     document.getElementById("uncollectedPackages").innerHTML += `
-        <div class="card text-dark bg-warning mt-2" id="card-${i}">
-            <div class="card-header btn btn-lin text-dark" id="headingFind-${i}" data-bs-toggle="collapse" data-bs-target="#collapseFind-${i}"
-            aria-expanded="true" aria-controls="collapseFind-${i}">
+        <div class="card text-dark bg-warning mt-2" id="card-${packageId}">
+            <div class="card-header btn btn-lin text-dark" id="headingFind-${packageId}" data-bs-toggle="collapse" data-bs-target="#collapseFind-${packageId}"
+            aria-expanded="true" aria-controls="collapseFind-${packageId}">
                 <div class="container">
                     <div class="row">
                     <div class="col-sm-2 text-start">
@@ -149,25 +160,27 @@ function showCannotFindPackages(packageInfo) {
                         <p class="card-text">Arrived on: <b>${times.arrivedTime}</b></p>
                     </div>
                     <div class="col-sm-4 text-end">
-                        <button type="button" class="btn btn-success" id="cannotFind-${i}">Collected<p hidden>*${i}*</p></button>
+                        <button type="button" class="btn btn-success" id="cannotFind-${packageId}">Collected<p hidden>*${packageId}*</p></button>
                     </div>
                     </div>
                 </div>
             </div>
 
-            <div id="collapseFind-${i}" class="collapse" aria-labelledby="headingFind-${i}" data-parent="#accordion">
+            <div id="collapseFind-${packageId}" class="collapse" aria-labelledby="headingFind-${packageId}" data-parent="#accordion">
                 <div class="card-body">
                     <div class="container">
                         <div class="row border-bottom border-dark">
                             <div class="col">
                                 Type: ${packageType}
                                 <br>
-                                Parcel no: ${parcelNoShow}
+                                Package no: ${parcelNoShow}
+                                <br>
+                                Package id: ${packageId}
                                 <br>
                                 Reminder emails: ${reminderEmails}
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row mt-1">
                             <div class="col">
                                 Arrived date: ${times.arrivedTime}
                                 <br>
@@ -188,16 +201,38 @@ function showCannotFindPackages(packageInfo) {
             </div>
         </div>`
 
+    cannotFindPackagesArray.push(packageInfo)
+
+    addUncollectedToCollectedListener()
+
 }
 
+function addUncollectedToCollectedListener() {
 
+    for (let i = 0; i < cannotFindPackagesArray.length; i++) {
+        const packageId = cannotFindPackagesArray[i].id
+        console.log("added one", packageId);
+
+        document.getElementById(`cannotFind-${packageId}`).addEventListener("click", function (event) {
+
+            console.log("collected");
+
+
+
+
+        });
+    }
+
+};
 
 
 async function showUncollectedPackages(searchCIS) {
 
     // get uncollected packages details for specific student
     showPackagesId = []
+    cannotFindPackagesArray = []
     num = 0
+    recentCollectToUncollectNum = 0
     const uncollectedPackages = await getOneStuAllUncollectedPackages(searchCIS)
     const uncollectedPackagesNum = uncollectedPackages.length
     document.getElementById("accordion").innerHTML = ''
@@ -210,7 +245,7 @@ async function showUncollectedPackages(searchCIS) {
     console.log(uncollectedPackages);
 
     if (uncollectedPackages.length == 0) {
-        document.getElementById("accordion").innerHTML = `<h1 class="mt-4 mb-3 text-center">All packages were collected</h1>`
+        document.getElementById("accordion").innerHTML = `<h1 class="mt-4 mb-3 text-center">All packages were collected 📭</h1>`
     }
 
     var letterNum = 0;
@@ -220,7 +255,8 @@ async function showUncollectedPackages(searchCIS) {
     for (var i = 0; i < uncollectedPackagesNum; i++) {
         const packageInfo = uncollectedPackages[i]
         var packageType = packageInfo.type
-        showPackagesId.push(packageInfo.id)
+        const packageId = packageInfo.id
+        showPackagesId.push(packageId)
 
         if (packageType == "Letter") {
             letterNum += 1;
@@ -235,19 +271,26 @@ async function showUncollectedPackages(searchCIS) {
 
         times = {
             arrivedTime: packageInfo.arrivedTime.seconds,
-            arrivedEmailSent: packageInfo.arrivedEmailSent.seconds,
             collectedTime: unixNow
+        }
+
+        if (packageInfo.arrivedEmailSent == null) {
+            times["arrivedEmailSent"] = "email not sent yet"
+        } else {
+            times["arrivedEmailSent"] = packageInfo.arrivedEmailSent.seconds
         }
 
         for (const [time, unix] of Object.entries(times)) {
 
-            const firebaseTime = unix * 1000
+            if (Number.isInteger(unix)) {
+                const firebaseTime = unix * 1000
 
-            const firebaseTimeMili = new Date(firebaseTime)
-            const option = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric", hour12: true }
-            const localTimeString = firebaseTimeMili.toLocaleString("en-GB", option)
+                const firebaseTimeMili = new Date(firebaseTime)
+                const option = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric", hour12: true }
+                const localTimeString = firebaseTimeMili.toLocaleString("en-GB", option)
 
-            times[time] = localTimeString
+                times[time] = localTimeString
+            }
         }
 
         var parcelNo = packageInfo.parcelNo
@@ -265,9 +308,9 @@ async function showUncollectedPackages(searchCIS) {
         }
 
         document.getElementById("accordion").innerHTML += `
-        <div class="card text-white bg-success mt-2" id="card-${i}">
-            <div class="card-header btn btn-lin text-white" id="heading-${i}" data-bs-toggle="collapse" data-bs-target="#collapse-${i}"
-            aria-expanded="true" aria-controls="collapse-${i}">
+        <div class="card text-white bg-success mt-2" id="card-${packageId}">
+            <div class="card-header btn btn-lin text-white" id="heading-${packageId}" data-bs-toggle="collapse" data-bs-target="#collapse-${packageId}"
+            aria-expanded="true" aria-controls="collapse-${packageId}">
                 <div class="container">
                     <div class="row">
                     <div class="col-sm-2 text-start">
@@ -280,25 +323,27 @@ async function showUncollectedPackages(searchCIS) {
                         <p class="card-text">Arrived on: <b>${times.arrivedTime}</b></p>
                     </div>
                     <div class="col-sm-4 text-end">
-                        <button type="button" class="btn btn-danger" id="uncollect-${i}">Uncollect<p hidden>*${i}*</p></button>
+                        <button type="button" class="btn btn-danger" id="uncollect-${i}">Uncollect<p hidden>*${packageId}*</p></button>
                     </div>
                     </div>
                 </div>
             </div>
 
-            <div id="collapse-${i}" class="collapse" aria-labelledby="heading-${i}" data-parent="#accordion">
+            <div id="collapse-${packageId}" class="collapse" aria-labelledby="heading-${packageId}" data-parent="#accordion">
                 <div class="card-body">
                     <div class="container">
                         <div class="row border-bottom border-dark">
                             <div class="col">
                                 Type: ${packageType}
                                 <br>
-                                Parcel no: ${parcelNoShow}
+                                Package no: ${parcelNoShow}
+                                <br>
+                                Package id: ${packageId}
                                 <br>
                                 Reminder emails: ${reminderEmails}
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row mt-1">
                             <div class="col">
                                 Arrived date: ${times.arrivedTime}
                                 <br>
@@ -339,21 +384,30 @@ function addUncollectedListener(uncollectedPackages, uncollectedPackagesNum, tim
 
     for (let i = 0; i < uncollectedPackagesNum; i++) {
         document.getElementById(`uncollect-${i}`).addEventListener("click", function (event) {
-            let id = document.getElementById(`uncollect-${i}`).innerHTML.split('*')
-            let arrayIndex = id[1]
+            // let packageInfoText = document.getElementById(`uncollect-${i}`).innerHTML.split('*')
+            // let arrayIndex = packageInfoText[1].id
 
-            const packageInfo = uncollectedPackages[arrayIndex]
+            const packageInfo = uncollectedPackages[i]
+
+            console.log("collected time?", packageInfo);
+
+            var parcelNoShow = packageInfo.parcelNo
+            if (parcelNoShow == null) {
+                parcelNoShow = 'N/A'
+            }
 
             document.getElementById("uncollectModalText").innerHTML = `You have selected
             <br>Name: <b>${database[packageInfo.cis].email}</b>
             <br>Type: <b>${packageInfo.type}</b>
+            <br>Package no: <b>${parcelNoShow}</b>
+            <br>Package id: <b>${packageInfo.id}</b>
             <br>Arrived on: <b>${times.arrivedTime}</b>
+            <br>Collected on: <b>${times.collectedTime}</b>
             `
 
             showModal()
 
             document.getElementById("uncollectModalInfo").innerHTML = `*${JSON.stringify(packageInfo)}*`
-            document.getElementById("uncollectModalArrayIndex").innerHTML = `*${i}*`
 
         });
     };
@@ -363,9 +417,9 @@ function addUncollectedListener(uncollectedPackages, uncollectedPackagesNum, tim
 
 
 async function load10RecentCollectedPackages() {
-    document.getElementById("accordionConnected").innerHTML = ''
+    document.getElementById("accordionCollected").innerHTML = ''
 
-    console.log(searchCIS);
+    console.log("limit total", totalUncollectedPackageNum);
 
     // uncollectedPackages
 
@@ -382,7 +436,9 @@ async function load10RecentCollectedPackages() {
 
     document.getElementById("showCollectedPackages").style.display = "block"
 
-    const limitNum = 10 + totalUncollectedPackageNum - num
+    const limitNum = 5 + totalUncollectedPackageNum - num + recentCollectToUncollectNum
+
+    console.log("real limit", limitNum);
 
     const recentCollectedPackages = await getRecentCollectedPackages(searchCIS, limitNum)
 
@@ -396,8 +452,6 @@ async function load10RecentCollectedPackages() {
 
     show10RecentCollectedPackages(recentCollectedPackages)
 
-
-
 }
 
 function show10RecentCollectedPackages(recentCollectedPackages) {
@@ -405,13 +459,15 @@ function show10RecentCollectedPackages(recentCollectedPackages) {
     const recentCollectedPackagesNum = recentCollectedPackages.length
     var showedPackage = false
     var checkExistPackageCardNum = 0
-    console.log(showPackagesId);
+    var btnShown = []
+    console.log("showed package id", showPackagesId);
 
     for (var i = 0; i < recentCollectedPackagesNum; i++) {
         const packageInfo = recentCollectedPackages[i]
+        const packageId = packageInfo.id
         showedPackage = false
 
-        if (showPackagesId.includes(packageInfo.id)){
+        if (showPackagesId.includes(packageId)){
             console.log("showed already");
             checkExistPackageCardNum += 1
             showedPackage = true
@@ -430,27 +486,36 @@ function show10RecentCollectedPackages(recentCollectedPackages) {
             const unixNow = Math.floor(date.getTime() / 1000)
             const tenMinsUnix = unixNow - 600
 
+            // console.log(packageInfo);
             times = {
                 arrivedTime: packageInfo.arrivedTime.seconds,
-                arrivedEmailSent: packageInfo.arrivedEmailSent.seconds,
                 collectedTime: packageInfo.collectedTime.seconds
+            }
+
+            if (packageInfo.arrivedEmailSent == null) {
+                times["arrivedEmailSent"] = "email not sent yet"
+            } else {
+                times["arrivedEmailSent"] = packageInfo.arrivedEmailSent.seconds
             }
 
             var buttonHtml = ''
             if (times.collectedTime >= tenMinsUnix) {
                 console.log("within 10 mins");
-                buttonHtml = `<button type="button" class="btn btn-danger" id="uncollectConnected-${i}">Uncollect<p hidden>*${i}*</p></button>`
+                buttonHtml = `<button type="button" class="btn btn-danger" id="uncollectCollected-${packageId}">Uncollect<p hidden>*${packageId}*</p></button>`
+                btnShown.push(packageInfo)
             }
 
             for (const [time, unix] of Object.entries(times)) {
 
-                const firebaseTime = unix * 1000
+                if (Number.isInteger(unix)) {
+                    const firebaseTime = unix * 1000
 
-                const firebaseTimeMili = new Date(firebaseTime)
-                const option = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric", hour12: true }
-                const localTimeString = firebaseTimeMili.toLocaleString("en-GB", option)
+                    const firebaseTimeMili = new Date(firebaseTime)
+                    const option = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric", hour12: true }
+                    const localTimeString = firebaseTimeMili.toLocaleString("en-GB", option)
 
-                times[time] = localTimeString
+                    times[time] = localTimeString
+                }
             }
 
             var parcelNo = packageInfo.parcelNo
@@ -465,10 +530,10 @@ function show10RecentCollectedPackages(recentCollectedPackages) {
                 reminderEmails = "N/A"
             }
 
-            document.getElementById("accordionConnected").innerHTML += `
-                <div class="card text-white bg-secondary mt-2" id="card-${i}">
-                    <div class="card-header btn btn-lin text-white" id="headingCollected-${i}" data-bs-toggle="collapse" data-bs-target="#collapseConnected-${i}"
-                    aria-expanded="true" aria-controls="collapseConnected-${i}">
+            document.getElementById("accordionCollected").innerHTML += `
+                <div class="card text-white bg-secondary mt-2" id="card-${packageId}">
+                    <div class="card-header btn btn-lin text-white" id="headingCollected-${packageId}" data-bs-toggle="collapse" data-bs-target="#collapseCollected-${packageId}"
+                    aria-expanded="true" aria-controls="collapseCollected-${packageId}">
                         <div class="container">
                             <div class="row">
                             <div class="col-sm-2 text-start">
@@ -487,19 +552,21 @@ function show10RecentCollectedPackages(recentCollectedPackages) {
                         </div>
                     </div>
 
-                    <div id="collapseConnected-${i}" class="collapse" aria-labelledby="headingCollected-${i}" data-parent="#accordion">
+                    <div id="collapseCollected-${packageId}" class="collapse" aria-labelledby="headingCollected-${packageId}" data-parent="#accordion">
                         <div class="card-body">
                             <div class="container">
                                 <div class="row border-bottom border-dark">
                                     <div class="col">
                                         Type: ${packageType}
                                         <br>
-                                        Parcel no: ${parcelNoShow}
+                                        Package no: ${parcelNoShow}
+                                        <br>
+                                        Package id: ${packageId}
                                         <br>
                                         Reminder emails: ${reminderEmails}
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row mt-1">
                                     <div class="col">
                                         Arrived date: ${times.arrivedTime}
                                         <br>
@@ -525,9 +592,47 @@ function show10RecentCollectedPackages(recentCollectedPackages) {
     }
 
     if (checkExistPackageCardNum == recentCollectedPackagesNum) {
-        document.getElementById("accordionConnected").innerHTML = `<h1 class="mt-4 mb-3 text-center">All packages were shown</h1>`
+        document.getElementById("accordionCollected").innerHTML = `<h1 class="mt-4 mb-3 text-center">All packages were shown</h1>`
     }
+
+    console.log("btn Shown",btnShown);
+
+    addRecentCollectedListener(times, btnShown)
+
 }
+
+
+function addRecentCollectedListener(times, btnShown) {
+
+    for (let i = 0; i < btnShown.length; i++) {
+        const packageInfo = btnShown[i]
+        const packageId = packageInfo.id
+        console.log(packageId);
+
+        document.getElementById(`uncollectCollected-${packageId}`).addEventListener("click", function (event) {
+
+            var parcelNoShow = packageInfo.parcelNo
+            if (parcelNoShow == null) {
+                parcelNoShow = 'N/A'
+            }
+
+            document.getElementById("uncollectModalText").innerHTML = `You have selected
+            <br>Name: <b>${database[packageInfo.cis].email}</b>
+            <br>Type: <b>${packageInfo.type}</b>
+            <br>Package no: <b>${parcelNoShow}</b>
+            <br>Package id: <b>${packageInfo.id}</b>
+            <br>Arrived on: <b>${times.arrivedTime}</b>
+            <br>Collected on: <b>${times.collectedTime}</b>
+            `
+
+            showModal()
+
+            document.getElementById("uncollectModalInfo").innerHTML = `*${JSON.stringify(packageInfo)}*`
+
+        });
+    };
+
+};
 
 
 

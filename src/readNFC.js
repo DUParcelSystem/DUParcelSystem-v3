@@ -51,7 +51,6 @@ function callNFCReader(win) {
         reader.on('error', err => {
             console.log('Error(', reader.name, '):', err.message);
 
-
         });
 
         reader.on('status', (status) => {
@@ -72,9 +71,7 @@ function callNFCReader(win) {
                 reader.disconnect(reader.SCARD_LEAVE_CARD, err => {
 
                     if (err) {
-                        console.log(err);
-
-                        console.log("-------------------------- Tap again --------------------------");
+                        win.webContents.send('nfc-uid-error', err)
 
                         return;
                     }
@@ -104,6 +101,7 @@ function callNFCReader(win) {
 
                     if (err) {
                         console.log(err);
+                        win.webContents.send('nfc-uid-error', err)
                         return;
                     }
 
@@ -134,13 +132,13 @@ function callNFCReader(win) {
 
                         if (err) {
                             console.log(err);
-
-                            console.log("I am here, TRANSACTION");
+                            win.webContents.send('nfc-uid-error', err)
                             return;
                         }
 
                         if (response.length < 2) {
                             console.log(`Invalid response length ${response.length}. Expected minimal length was 2 bytes.`);
+                            win.webContents.send('nfc-uid-error', `Invalid response length ${response.length}. Expected minimal length was 2 bytes.`)
                             return;
                         }
 
@@ -150,7 +148,7 @@ function callNFCReader(win) {
                         // an error occurred
                         if (statusCode !== 0x9000) {
                             console.log('Could not get card UID.');
-
+                            win.webContents.send('nfc-uid-error', 'Could not get card UID.')
 
                             return;
                         }

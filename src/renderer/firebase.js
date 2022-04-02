@@ -10,18 +10,18 @@ const currentCollege = config.get('currentCollege');
 
 var pcUserName;
 (async () => {
-    pcUserName  = await fullName();
+    pcUserName = await fullName();
 })();
 
 
 const firebaseConfig = {
-  apiKey: process.env.apiKey,
-  authDomain: process.env.authDomain,
-  projectId: process.env.projectId,
-  storageBucket: process.env.storageBucket,
-  messagingSenderId: process.env.messagingSenderId,
-  appId: process.env.appId,
-  measurementId: process.env.measurementId
+    apiKey: process.env.apiKey,
+    authDomain: process.env.authDomain,
+    projectId: process.env.projectId,
+    storageBucket: process.env.storageBucket,
+    messagingSenderId: process.env.messagingSenderId,
+    appId: process.env.appId,
+    measurementId: process.env.measurementId
 };
 
 const app = initializeApp(firebaseConfig);
@@ -152,6 +152,32 @@ async function getRecentCollectedPackages(searchCIS, limitNum) {
 
 }
 
+// find one doc (one student) using uid
+async function getCISusingUID(uid) {
+
+    const cisFirebase = query(collection(db, currentCollege), where("campusCardUID", "==", uid));
+
+    const querySnapshot = await getDocs(cisFirebase);
+    if (querySnapshot.docs.length == 0) {
+        return null
+    }
+    const cis = querySnapshot.docs[0].id
+
+    return cis
+};
+
+// update UID for card
+// const uid = "04:11:5D:12:28:6B:80";
+
+async function updateCampusCardUID(cis, uid) {
+    const updateRef = doc(db, currentCollege, cis)
+
+    await updateDoc(updateRef, {
+        "campusCardUID": uid
+    });
+
+}
+
 
 
 // get all uncollected parcels from all users
@@ -202,18 +228,6 @@ async function getRecentCollectedPackages(searchCIS, limitNum) {
 //     });
 // })()
 
-
-// update UID for card
-// const myUID = "04:11:5D:12:28:6B:80";
-
-// (async () => {
-//     const updateRef = doc(db, "Test College", "qwwk95")
-
-//     await updateDoc(updateRef, {
-//         "campusCardUID": myUID
-//     });
-
-// })()
 
 
 // read one doc (one student)
@@ -365,4 +379,5 @@ async function getRecentCollectedPackages(searchCIS, limitNum) {
 
 
 
-module.exports = { addPackageFirebase, getOneStuAllUncollectedPackages, updateFirebaseToCollected, updateFirebaseToUncollected, getRecentCollectedPackages };
+module.exports = { addPackageFirebase, getOneStuAllUncollectedPackages, updateFirebaseToCollected, updateFirebaseToUncollected,
+    getRecentCollectedPackages, getCISusingUID, updateCampusCardUID };

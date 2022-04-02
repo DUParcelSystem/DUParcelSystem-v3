@@ -1,10 +1,11 @@
 const { database } = require('../readJSON.js');
-const { getOneStuAllUncollectedPackages, updateFirebaseToCollected, updateFirebaseToUncollected, getRecentCollectedPackages } = require('../firebase.js');
+const { getOneStuAllUncollectedPackages, updateFirebaseToCollected, updateFirebaseToUncollected,
+    getRecentCollectedPackages, getCISusingUID, updateCampusCardUID } = require('../firebase.js');
 const { ipcRenderer } = require("electron");
 const fullName = require('fullname');
 
 var searchCIS = ''
-var uncollectedPackages = []
+// var uncollectedPackages = []
 var totalUncollectedPackageNum = 0
 var num = 0
 var showPackagesId = []
@@ -20,14 +21,82 @@ ipcRenderer.on('nfc-connected-main', function (event, message) {
     document.getElementById("nfcReaderText").innerHTML = message
 })
 
-ipcRenderer.on('nfc-uid-main', function (event, uid) {
+ipcRenderer.on('nfc-uid-main', async function (event, uid) {
     console.log("renderer got uid: ", uid);
 
     // find cis name from uid
     // either firebase or search dict
+    searchCIS = await getCISusingUID(uid)
+
+    console.log("got cis", searchCIS);
+
+    if (searchCIS == null) {
+        showStudInfoError("N/A", "Student", "card", "not", "registered")
+        document.getElementById("searchCISForm").reset()
+
+        document.getElementById("campusCardUIDText").innerHTML = `Student card detected
+        <br>UID: <b>${uid}</b>
+        `
+
+        document.getElementById("campusCardUIDHidden").innerHTML = `*${uid}*`
+
+        // show modal to get student cis
+        showCampusCardModal()
+
+        return
+    }
+
+    showUncollectedPackages(searchCIS)
+})
+
+ipcRenderer.on('nfc-uid-error', async function (event, err) {
+    console.log("error: ", err);
+
+    showStudInfoError("N/A", "Error", "Tap", "student card", "again")
+
+})
 
 
-    // showUncollectedPackages(searchCIS)
+async function addCampusCardInfo() {
+
+    const cis = document.getElementById('campusCardCISTextBox').value
+
+    if (cis == '') {
+        document.getElementById("alertToTypeCIS").innerHTML = "You must type CIS username to add campus card!"
+        document.getElementById("alertToTypeCIS").style.display = "block"
+        return
+    } else if (database[cis] == null) {
+        // show things about no such user
+        document.getElementById("alertToTypeCIS").innerHTML = "CIS username not found!"
+        document.getElementById("alertToTypeCIS").style.display = "block"
+        return
+    }
+
+    let campusCardUIDText = document.getElementById("campusCardUIDHidden").innerHTML.split('*')
+    let campusCardUID = campusCardUIDText[1]
+
+    // update campus card uid to firebase
+    updateCampusCardUID(cis, campusCardUID)
+
+    searchCIS = cis
+
+    showUncollectedPackages(cis)
+
+    console.log("user exist");
+
+    closeCampusCardModal()
+
+}
+
+document.getElementById("addCampusCardModal").addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+        closeCampusCardModal()
+    }
+
+    if (event.key === "Enter") {
+        event.preventDefault();
+        addCampusCardInfo()
+    }
 })
 
 
@@ -436,7 +505,7 @@ async function load10RecentCollectedPackages() {
 
     document.getElementById("showCollectedPackages").style.display = "block"
 
-    const limitNum = 5 + totalUncollectedPackageNum - num + recentCollectToUncollectNum
+    const limitNum = 10 + totalUncollectedPackageNum - num + recentCollectToUncollectNum
 
     console.log("real limit", limitNum);
 
@@ -593,9 +662,10 @@ function show10RecentCollectedPackages(recentCollectedPackages) {
 
     if (checkExistPackageCardNum == recentCollectedPackagesNum) {
         document.getElementById("accordionCollected").innerHTML = `<h1 class="mt-4 mb-3 text-center">All packages were shown</h1>`
+        return
     }
 
-    console.log("btn Shown",btnShown);
+    // console.log("btn Shown",btnShown);
 
     addRecentCollectedListener(times, btnShown)
 
@@ -642,6 +712,22 @@ function showStudInfo(cis, fName, lName, numParcel, numLetter) {
     document.getElementById('lastNameText').innerText = lName
     document.getElementById('numberOfParcelText').innerText = numParcel
     document.getElementById('numberOfLetterText').innerText = numLetter
+    document.getElementById('firstNameTextDanger').innerText = ""
+    document.getElementById('lastNameTextDanger').innerText = ""
+    document.getElementById('numberOfParcelTextDanger').innerText = ""
+    document.getElementById('numberOfLetterTextDanger').innerText = ""
+}
+
+function showStudInfoError(cis, fName, lName, numParcel, numLetter) {
+    document.getElementById('cisText').innerText = cis
+    document.getElementById('firstNameText').innerText = ""
+    document.getElementById('lastNameText').innerText = ""
+    document.getElementById('numberOfParcelText').innerText = ""
+    document.getElementById('numberOfLetterText').innerText = ""
+    document.getElementById('firstNameTextDanger').innerText = fName
+    document.getElementById('lastNameTextDanger').innerText = lName
+    document.getElementById('numberOfParcelTextDanger').innerText = numParcel
+    document.getElementById('numberOfLetterTextDanger').innerText = numLetter
 }
 
 function showModal() {
@@ -657,18 +743,32 @@ function closeModal() {
     document.getElementById("cannotFindPackageModal").classList.remove("show")
 }
 
+function showCampusCardModal() {
+    document.getElementById("backdrop").style.display = "block"
+    document.getElementById("addCampusCardModal").style.display = "block"
+    document.getElementById("addCampusCardModal").classList.add("show")
+    document.getElementById('campusCardCISTextBox').focus();
+}
+
+function closeCampusCardModal() {
+    document.getElementById("backdrop").style.display = "none"
+    document.getElementById("addCampusCardModal").style.display = "none"
+    document.getElementById("addCampusCardModal").classList.remove("show")
+}
+
+
 // Get the modal
 var cannotFindPackageModal = document.getElementById('cannotFindPackageModal');
-var campusCardModal = document.getElementById('addCampusCardModal');
+// var campusCardModal = document.getElementById('addCampusCardModal');
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function (event) {
     if (event.target == cannotFindPackageModal) {
         closeModal()
     }
-    if (event.target == campusCardModal) {
-        closeModal()
-    }
+    // if (event.target == campusCardModal) {
+    //     closeModal()
+    // }
 }
 
 

@@ -19,8 +19,6 @@ function callNFCReader(win) {
         }
     })
 
-
-
     win.webContents.on('did-finish-load', function () {
 
         if (currentPage == "collectParcel" && nfcReaderConnected) {
@@ -28,7 +26,6 @@ function callNFCReader(win) {
 
             if (splitUID != '') {
                 win.webContents.send('nfc-uid-main', splitUID)
-                // splitUID = ''
             }
 
         } else {
@@ -50,7 +47,7 @@ function callNFCReader(win) {
 
         reader.on('error', err => {
             console.log('Error(', reader.name, '):', err.message);
-
+            sendUnconnectedNFCMessage(win)
         });
 
         reader.on('status', (status) => {

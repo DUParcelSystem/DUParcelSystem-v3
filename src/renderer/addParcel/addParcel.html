@@ -33,13 +33,13 @@
 
 
 
-  <div class="modal fade" id="selectPackageTypeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="selectPackageTypeModal" tabindex="-1" role="dialog" aria-labelledby="selectPackageTypeLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
 
         <div class="modal-header">
 
-          <h5 class="modal-title" id="exampleModalLabel">Select package</h5>
+          <h5 class="modal-title" id="selectPackageTypeLabel">Select package</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -70,13 +70,13 @@
     </div>
   </div>
 
-  <div class="modal fade" id="removePackageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="removePackageModal" tabindex="-1" role="dialog" aria-labelledby="removePackageLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
 
         <div class="modal-header">
 
-          <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+          <h5 class="modal-title" id="removePackageLabel">Are you sure?</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeRemoveModal()">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -101,7 +101,7 @@
   <div class="container-xl pt-3">
     <div class="row">
       <div class="col-sm">
-        <form class="d-flex">
+        <form class="d-flex" id="searchTextBoxFrom">
           <input id="searchTextBox" class="form-control me-2" type="text" placeholder="Last Name" aria-label="Search"
            onpropertychange onkeyup onpaste oninput="getSearchLastName()" onkeydown="return isNumberKey(event)" autofocus>
         </form>

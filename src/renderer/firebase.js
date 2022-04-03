@@ -1,25 +1,32 @@
 const { initializeApp } = require('firebase/app');
 const { getFirestore, collection, query, where, getDoc, doc, setDoc, getDocs,
-    updateDoc, addDoc, serverTimestamp, collectionGroup } = require('firebase/firestore');
+    updateDoc, addDoc, serverTimestamp, collectionGroup, orderBy, limit } = require('firebase/firestore');
 // const { getAnalytics } = require("firebase/analytics");
+const fullName = require('fullname');
+const config = require('config');
 require('dotenv').config();
 
+const currentCollege = config.get('currentCollege');
+
+var pcUserName;
+(async () => {
+    pcUserName = await fullName();
+})();
+
+
 const firebaseConfig = {
-  apiKey: process.env.apiKey,
-  authDomain: process.env.authDomain,
-  projectId: process.env.projectId,
-  storageBucket: process.env.storageBucket,
-  messagingSenderId: process.env.messagingSenderId,
-  appId: process.env.appId,
-  measurementId: process.env.measurementId
+    apiKey: process.env.apiKey,
+    authDomain: process.env.authDomain,
+    projectId: process.env.projectId,
+    storageBucket: process.env.storageBucket,
+    messagingSenderId: process.env.messagingSenderId,
+    appId: process.env.appId,
+    measurementId: process.env.measurementId
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 // const analytics = getAnalytics(app);
-
-
-
 
 
 // write package data to firebase
@@ -36,7 +43,7 @@ async function addPackageFirebase(addPackages) {
         // console.log("cis", studCIS);
 
         // Add a new document with a generated id.
-        const docRef = await addDoc(collection(db, "Test College", studCIS, "packages"), package);
+        const docRef = await addDoc(collection(db, currentCollege, studCIS, "packages"), package);
         // console.log("Document written with ID: ", docRef.id);
 
     }
@@ -60,18 +67,114 @@ async function addPackageFirebase(addPackages) {
 // get all uncollected parcels from specific user
 async function getOneStuAllUncollectedPackages(searchCIS) {
 
-    var uncollectedPackages = {}
-    const uncollectedPackagesFirebase = query(collection(db, "Test College", searchCIS, "packages"), where('collected', '==', false));
+    var uncollectedPackages = []
+    const uncollectedPackagesFirebase = query(collection(db, currentCollege, searchCIS, "packages"), where('collected', '==', false));
 
     const querySnapshot = await getDocs(uncollectedPackagesFirebase);
     querySnapshot.forEach((doc) => {
 
+        packageInfo = doc.data()
         docID = doc.id
-        uncollectedPackages[docID] = doc.data()
+        packageInfo["id"] = docID
+        uncollectedPackages.push(packageInfo)
 
     });
 
+    uncollectedPackages.sort(function (a, b) {
+        var aLastName = a.arrivedTime;
+        var bLastName = b.arrivedTime;
+        if (aLastName > bLastName) {
+            return 1;
+        } else if (aLastName < bLastName) {
+            return -1;
+        }
+    })
+
     return uncollectedPackages
+
+}
+
+// update package data to firebase, when collected package
+async function updateFirebaseToCollected(uncollectedPackages, uncollectedPackagesNum) {
+
+    for (var i = 0; i < uncollectedPackagesNum; i++) {
+        const packageInfo = uncollectedPackages[i]
+        var packageId = packageInfo.id
+        var packageCIS = packageInfo.cis
+
+        const packageData = {
+            collectedTime: serverTimestamp(),
+            givenOutBy: pcUserName,
+            collected: true
+        }
+
+        // update doc to change docs to collected
+        const docRef = await updateDoc(doc(db, currentCollege, packageCIS, "packages", packageId), packageData);
+
+    }
+}
+
+// update package to uncollected as not found
+async function updateFirebaseToUncollected(packageInfo) {
+
+    var packageId = packageInfo.id
+    var packageCIS = packageInfo.cis
+
+    const packageData = {
+        collectedTime: null,
+        givenOutBy: null,
+        collected: false
+    }
+
+    // update doc to change docs to collected
+    const docRef = await updateDoc(doc(db, currentCollege, packageCIS, "packages", packageId), packageData);
+
+}
+
+
+// get recent collected packages
+async function getRecentCollectedPackages(searchCIS, limitNum) {
+
+    var recentCollectedPackages = []
+    const recentCollectedPackagesFirebase = query(collection(db, currentCollege, searchCIS, "packages"), orderBy("collectedTime", "desc"), limit(limitNum));
+
+    const querySnapshot = await getDocs(recentCollectedPackagesFirebase);
+    querySnapshot.forEach((doc) => {
+
+        packageInfo = doc.data()
+        docID = doc.id
+        packageInfo["id"] = docID
+        recentCollectedPackages.push(packageInfo)
+
+    });
+
+    return recentCollectedPackages
+
+}
+
+// find one doc (one student) using uid
+async function getCISusingUID(uid) {
+
+    const cisFirebase = query(collection(db, currentCollege), where("campusCardUID", "==", uid));
+
+    const querySnapshot = await getDocs(cisFirebase);
+    if (querySnapshot.docs.length == 0) {
+        return null
+    }
+    const cis = querySnapshot.docs[0].id
+
+    return cis
+};
+
+// update UID for card
+// const uid = "04:11:5D:12:28:6B:80";
+
+async function updateCampusCardUID(cis, uid) {
+    const updateRef = doc(db, currentCollege, cis)
+
+    await updateDoc(updateRef, {
+        "campusCardUID": uid
+    });
 
 }
 
@@ -104,24 +207,6 @@ async function getOneStuAllUncollectedPackages(searchCIS) {
 
 
 
-
-// update package data to firebase, when collected package
-// (async () => {
-
-//     const packageData = {
-//         collectedTime: serverTimestamp(),
-//         givenOutBy: "Peter",
-//         collected: true
-//     }
-
-//     // Add a new document with a generated id.
-//     const docRef = await updateDoc(doc(db, "Test College", "qwwk95", "packages", "Mx38pCeqlSKlTAMkCEAG"), packageData);
-
-// })();
-
-
-
-
 // read packages using campusCardUID
 // const myUID = "04:11:5D:12:28:6B:80";
 
@@ -143,18 +228,6 @@ async function getOneStuAllUncollectedPackages(searchCIS) {
 //     });
 // })()
 
-
-// update UID for card
-// const myUID = "04:11:5D:12:28:6B:80";
-
-// (async () => {
-//     const updateRef = doc(db, "Test College", "qwwk95")
-
-//     await updateDoc(updateRef, {
-//         "campusCardUID": myUID
-//     });
-
-// })()
 
 
 // read one doc (one student)
@@ -306,4 +379,5 @@ async function getOneStuAllUncollectedPackages(searchCIS) {
 
 
 
-module.exports = { addPackageFirebase, getOneStuAllUncollectedPackages };
+module.exports = { addPackageFirebase, getOneStuAllUncollectedPackages, updateFirebaseToCollected, updateFirebaseToUncollected,
+    getRecentCollectedPackages, getCISusingUID, updateCampusCardUID };

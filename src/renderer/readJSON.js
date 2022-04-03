@@ -29,7 +29,6 @@ function findStudent(searchLastName, checkBox) {
     searchStudent.sort(function (a, b) {
         var aLastName = a.lName;
         var bLastName = b.lName;
-        // console.log(aFirstChar, bFirstChar);
         if (aLastName > bLastName) {
             return 1;
         } else if (aLastName < bLastName) {

@@ -357,7 +357,7 @@ function removePackage() {
 
 function clearSearch() {
 
-    document.getElementById("searchTextBox").value = ''
+    document.getElementById("searchTextBoxFrom").reset()
 
     const table = document.getElementById("studentTable");
 

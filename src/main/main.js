@@ -23,8 +23,7 @@ function createWindow() {
     //   ipcMain.on('collectParcelPage', (event) => {
     //     console.log("You are on collect parcel");
     //   })
-
-
+    
     win.loadFile('src/renderer/collectParcel/collectParcel.html')
 
     win.webContents.openDevTools();
@@ -43,12 +42,15 @@ function createWindow() {
         event.preventDefault();
       });
 
-      win.once('ready-to-show', () => {
-        // console.log("once");
+    win.once('ready-to-show', () => {
+    const callNFCReader = require('../readNFC.js');
+    callNFCReader(win, app)
+    })
+
+    win.webContents.on('did-finish-load', function () {
         win.show()
-        const callNFCReader = require('../readNFC.js');
-        callNFCReader(win)
-      })
+    });
+
 
     //   win.on('close', e => {
     //     e.preventDefault()
@@ -67,11 +69,6 @@ function createWindow() {
     //       }
     //     })
     //   })
-
-    // win.webContents.on('did-finish-load', function () {
-
-    //     console.log("loaded");
-    // });
 
 }
 

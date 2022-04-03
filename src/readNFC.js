@@ -1,7 +1,7 @@
 const pcsclite = require('@aaroncheung430/pcsclite');
 const pcsc = pcsclite();
 
-function callNFCReader(win) {
+function callNFCReader(win, app) {
 
     var splitUID = ''
     var currentPage = 'collectParcel'
@@ -74,7 +74,6 @@ function callNFCReader(win) {
                     }
 
                     console.log('Disconnected');
-
                 });
 
             }
@@ -82,18 +81,18 @@ function callNFCReader(win) {
 
                 console.log("card inserted");
 
-                if (win.isFocused() == false) {
-                    win.hide()
-                }
-
                 // to not refresh it's own page
                 if (currentPage != "collectParcel") {
                     win.loadFile('src/renderer/collectParcel/collectParcel.html')
                 }
 
+                win.setAlwaysOnTop(true, "normal")
+                win.maximize()
                 win.show()
+                win.setAlwaysOnTop(false)
+                app.focus()
 
-
+                
                 reader.connect({ share_mode: reader.SCARD_SHARE_SHARED }, (err, protocol) => {
 
                     if (err) {
@@ -185,6 +184,7 @@ function callNFCReader(win) {
     });
 
 
+    // win.show()
 }
 
 function sendConnectedNFCMessage(win) {

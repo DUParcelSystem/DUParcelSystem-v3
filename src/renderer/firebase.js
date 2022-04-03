@@ -168,7 +168,6 @@ async function getCISusingUID(uid) {
 
 // update UID for card
 // const uid = "04:11:5D:12:28:6B:80";
-
 async function updateCampusCardUID(cis, uid) {
     const updateRef = doc(db, currentCollege, cis)
 
@@ -179,31 +178,22 @@ async function updateCampusCardUID(cis, uid) {
 }
 
 
-
 // get all uncollected parcels from all users
-// async function getAllUncollectedPackages(searchCIS) {
+async function getAllUncollectedPackages() {
 
-//     var uncollectedPackages = {}
-//     const uncollectedPackagesFirebase = query(collectionGroup(db, 'packages'), where('collected', '==', false));
+    var allUncollectedPackages = {}
+    const allUncollectedPackagesFirebase = query(collectionGroup(db, 'packages'), where('collected', '==', false));
 
-//     const querySnapshot = await getDocs(uncollectedPackagesFirebase);
-//     querySnapshot.forEach((doc) => {
+    const querySnapshot = await getDocs(allUncollectedPackagesFirebase);
+    querySnapshot.forEach((doc) => {
+        docID = doc.id
+        allUncollectedPackages[docID] = doc.data()
+        console.log(doc.id, ' => ', doc.data());
+    });
 
-//         docID = doc.id
-
-//         uncollectedPackages[docID] = doc.data()
-
-//         console.log(doc.id, ' => ', doc.data());
-
-//         // console.log(uncollectedPackages);
-
-//     });
-
-//     console.log(uncollectedPackages);
-
-//     // return
-
-// }
+    console.log(allUncollectedPackages);
+    return
+}
 
 
 
@@ -380,4 +370,4 @@ async function updateCampusCardUID(cis, uid) {
 
 
 module.exports = { addPackageFirebase, getOneStuAllUncollectedPackages, updateFirebaseToCollected, updateFirebaseToUncollected,
-    getRecentCollectedPackages, getCISusingUID, updateCampusCardUID };
+    getRecentCollectedPackages, getCISusingUID, updateCampusCardUID, getAllUncollectedPackages };

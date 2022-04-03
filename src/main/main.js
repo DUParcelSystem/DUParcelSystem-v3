@@ -23,8 +23,8 @@ function createWindow() {
     //   ipcMain.on('collectParcelPage', (event) => {
     //     console.log("You are on collect parcel");
     //   })
-    
-    win.loadFile('src/renderer/collectParcel/collectParcel.html')
+
+    win.loadFile('src/renderer/viewParcels/viewParcels.html')
 
     win.webContents.openDevTools();
 

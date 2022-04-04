@@ -12,18 +12,22 @@ const tabByArrivedDate = document.getElementById("tabByArrivedDate")
 const tabByCollectedDate = document.getElementById("tabByCollectedDate")
 const tabByCIS = document.getElementById("tabByCIS")
 
+var onTab = "allUncollected"
+var onDate = ''
+
 getAllUncollected()
 
 document.getElementById("printToPDF").addEventListener('click', () => {
 
     document.getElementById("printToPDF").blur()
 
-    ipcRenderer.send('print-to-pdf')
+    ipcRenderer.send('print-to-pdf', onTab, onDate)
 
 
 })
 
 searchByUncollectedBtn.addEventListener('click', async () => {
+    onTab = "allUncollected"
 
     if (searchByUncollectedBtn.classList.contains("active")) {
         return
@@ -46,6 +50,7 @@ searchByUncollectedBtn.addEventListener('click', async () => {
 })
 
 searchByArrivedDateBtn.addEventListener('click', () => {
+    onTab = "arrivedDate"
 
     if (searchByArrivedDateBtn.classList.contains("active")) {
         return
@@ -92,6 +97,7 @@ document.getElementById('arrivedDateForm').addEventListener("submit", async func
 
 
 searchByCollectedDateBtn.addEventListener('click', () => {
+    onTab = "collectedDate"
 
     if (searchByCollectedDateBtn.classList.contains("active")) {
         return
@@ -138,6 +144,7 @@ document.getElementById('collectedDateForm').addEventListener("submit", async fu
 
 
 searchByStudentBtn.addEventListener('click', () => {
+    onTab = "cisStudent"
 
     if (searchByStudentBtn.classList.contains("active")) {
         return

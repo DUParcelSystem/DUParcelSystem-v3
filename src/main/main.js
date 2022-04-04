@@ -1,15 +1,15 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron')
 const path = require('path')
-const config = require('config');
 const fs = require('fs')
 const os = require('os')
-
-const currentCollege = config.get('currentCollege');
-const displayCollegeName = config.get('displayCollegeName');
+const { getCollegeName } = require('./config.js')
 
 function createWindow() {
 
     console.log("load every time");
+
+    const collegeName = getCollegeName()
+
     const win = new BrowserWindow({
         // width: 800,
         // height: 600,
@@ -22,8 +22,9 @@ function createWindow() {
     })
 
 
-    ipcMain.on('print-to-pdf', (event) => {
+    ipcMain.on('print-to-pdf', (event, onTab, onDate) => {
         console.log("going to print");
+        console.log("tab", onTab, "date", onDate);
 
         const pdfPath = path.join(os.homedir(), 'Desktop', 'temp.pdf')
         win.webContents.printToPDF({}).then(data => {
@@ -39,13 +40,13 @@ function createWindow() {
 
 
 
-    win.loadFile('src/renderer/viewParcels/viewParcels.html')
+    win.loadFile('src/renderer/collectParcel/collectParcel.html')
 
     win.webContents.openDevTools();
 
     win.maximize();
 
-    win.setTitle(displayCollegeName)
+    win.setTitle(collegeName[1])
 
     win.on('did-start-loading', (event) => {
         // contents.savePage(fullPath, saveType)​

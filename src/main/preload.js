@@ -1,9 +1,9 @@
-const config = require('config');
-const displayCollegeName = config.get('displayCollegeName');
+const { getCollegeName } = require('./config.js')
+const collegeName = getCollegeName()
 
 window.addEventListener('DOMContentLoaded', () => {
 
-    document.getElementById("title").innerHTML = displayCollegeName;
+    document.getElementById("title").innerHTML = collegeName[1];
 
     const url = window.location.href
     const urlArray = url.split("/")

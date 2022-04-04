@@ -3,17 +3,17 @@ const { getFirestore, collection, query, where, getDoc, doc, setDoc, getDocs,
     updateDoc, addDoc, serverTimestamp, collectionGroup, orderBy, limit } = require('firebase/firestore');
 // const { getAnalytics } = require("firebase/analytics");
 const fullName = require('fullname');
-const config = require('config');
-require('dotenv').config();
+const { getCollegeName } = require('../main/config.js')
+require('dotenv').config({path:__dirname+'/./../../.env'});
 
-const currentCollege = config.get('currentCollege');
+const collegeName = getCollegeName()
 
 var pcUserName;
 (async () => {
     pcUserName = await fullName();
 })();
 
-
+console.log("auth name",process.env.authDomain );
 const firebaseConfig = {
     apiKey: process.env.apiKey,
     authDomain: process.env.authDomain,
@@ -38,12 +38,13 @@ async function addPackageFirebase(addPackages) {
 
         const package = addPackages[i]
         const studCIS = package["cis"]
+        console.log("studCIS", studCIS, package);
 
         // console.log("package", package);
         // console.log("cis", studCIS);
 
         // Add a new document with a generated id.
-        const docRef = await addDoc(collection(db, currentCollege, studCIS, "packages"), package);
+        const docRef = await addDoc(collection(db, collegeName[0], studCIS, "packages"), package);
         // console.log("Document written with ID: ", docRef.id);
 
     }
@@ -68,7 +69,7 @@ async function addPackageFirebase(addPackages) {
 async function getOneStuAllUncollectedPackages(searchCIS) {
 
     var uncollectedPackages = []
-    const uncollectedPackagesFirebase = query(collection(db, currentCollege, searchCIS, "packages"), where('collected', '==', false));
+    const uncollectedPackagesFirebase = query(collection(db, collegeName[0], searchCIS, "packages"), where('collected', '==', false));
 
     const querySnapshot = await getDocs(uncollectedPackagesFirebase);
     querySnapshot.forEach((doc) => {
@@ -109,7 +110,7 @@ async function updateFirebaseToCollected(uncollectedPackages, uncollectedPackage
         }
 
         // update doc to change docs to collected
-        const docRef = await updateDoc(doc(db, currentCollege, packageCIS, "packages", packageId), packageData);
+        const docRef = await updateDoc(doc(db, collegeName[0], packageCIS, "packages", packageId), packageData);
 
     }
 }
@@ -127,7 +128,7 @@ async function updateFirebaseToUncollected(packageInfo) {
     }
 
     // update doc to change docs to collected
-    const docRef = await updateDoc(doc(db, currentCollege, packageCIS, "packages", packageId), packageData);
+    const docRef = await updateDoc(doc(db, collegeName[0], packageCIS, "packages", packageId), packageData);
 
 }
 
@@ -136,7 +137,7 @@ async function updateFirebaseToUncollected(packageInfo) {
 async function getRecentCollectedPackages(searchCIS, limitNum) {
 
     var recentCollectedPackages = []
-    const recentCollectedPackagesFirebase = query(collection(db, currentCollege, searchCIS, "packages"), orderBy("collectedTime", "desc"), limit(limitNum));
+    const recentCollectedPackagesFirebase = query(collection(db, collegeName[0], searchCIS, "packages"), orderBy("collectedTime", "desc"), limit(limitNum));
 
     const querySnapshot = await getDocs(recentCollectedPackagesFirebase);
     querySnapshot.forEach((doc) => {
@@ -155,7 +156,7 @@ async function getRecentCollectedPackages(searchCIS, limitNum) {
 // find one doc (one student) using uid
 async function getCISusingUID(uid) {
 
-    const cisFirebase = query(collection(db, currentCollege), where("campusCardUID", "==", uid));
+    const cisFirebase = query(collection(db, collegeName[0]), where("campusCardUID", "==", uid));
 
     const querySnapshot = await getDocs(cisFirebase);
     if (querySnapshot.docs.length == 0) {
@@ -169,7 +170,7 @@ async function getCISusingUID(uid) {
 // update UID for card
 // const uid = "04:11:5D:12:28:6B:80";
 async function updateCampusCardUID(cis, uid) {
-    const updateRef = doc(db, currentCollege, cis)
+    const updateRef = doc(db, collegeName[0], cis)
 
     await updateDoc(updateRef, {
         "campusCardUID": uid
@@ -219,7 +220,7 @@ async function getAllTimePackages(startDate, endDate, time) {
 async function getOneStudentPackages(searchCIS) {
 
     var studentPackages = []
-    const studentPackagesFirebase = collection(db, currentCollege, searchCIS, "packages")
+    const studentPackagesFirebase = collection(db, collegeName[0], searchCIS, "packages")
 
     const querySnapshot = await getDocs(studentPackagesFirebase);
     querySnapshot.forEach((doc) => {

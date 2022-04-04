@@ -31,25 +31,33 @@
     </nav>
 
     <div class="container-xl pt-3" id="searchTabs">
-      <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#" id="searchByUncollectedBtn">All uncollected packages</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" id="searchByArrivedDateBtn">By arrived date</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" id="searchByCollectedDateBtn">By collected date</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" id="searchByStudentBtn">By student</a>
-        </li>
-      </ul>
-        <h4 id="packageTotalText" class="pt-3"></h4>
+      <div class="row">
+        <div class="col-10">
+          <ul class="nav nav-tabs">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#" id="searchByUncollectedBtn">All uncollected packages</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="searchByArrivedDateBtn">By arrived date</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="searchByCollectedDateBtn">By collected date</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="searchByStudentBtn">By student</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-2 text-end">
+          <button type="button" class="btn btn-outline-secondary" id="printToPDF">Print to pdf</button>
+        </div>
+      </div>
     </div>
 
 
-    <div class="container-xl pt-2" id="tabAllUncollected">
+    <div class="container-xl pt-3" id="tabAllUncollected">
+
+      <h4 id="UncollectedpackageTotalText"></h4>
 
       <table class="table table-bordered" id="uncollectedTable">
         <thead class="thead-dark">
@@ -68,12 +76,14 @@
     </div>
 
 
-    <div class="container-xl pt-2" id="tabByArrivedDate" style="display: none">
+    <div class="container-xl pt-3" id="tabByArrivedDate" style="display: none">
+
+      <h4 id="arrivedTimepackageTotalText"></h4>
 
       <form id="arrivedDateForm">
         <label for="viewPackagesArrivedDate">View packages arrived date on:</label>
         <input type="date" id="viewPackagesArrivedDate" name="viewPackagesArrivedDate">
-        <button class="btn btn-outline-success" type="submit">Search</button>
+        <button class="btn btn-outline-success" type="submit" id="viewPackagesArrivedDateBtn">Search</button>
       </form>
 
         <table class="table table-bordered mt-2" id="arrivedDateTable">
@@ -93,12 +103,14 @@
         </table>
       </div>
 
-      <div class="container-xl pt-2" id="tabByCollectedDate" style="display: none">
+      <div class="container-xl pt-3" id="tabByCollectedDate" style="display: none">
+
+        <h4 id="collectedTimepackageTotalText"></h4>
 
         <form id="collectedDateForm">
           <label for="viewPackagesCollectedDate">View packages collected date on:</label>
           <input type="date" id="viewPackagesCollectedDate" name="viewPackagesCollectedDate">
-          <button class="btn btn-outline-success" type="submit">Search</button>
+          <button class="btn btn-outline-success" type="submit" id="viewPackagesCollectedDateBtn">Search</button>
         </form>
 
           <table class="table table-bordered mt-2" id="collectedDateTable">
@@ -118,7 +130,9 @@
         </div>
 
 
-        <div class="container-xl pt-2" id="tabByCIS" style="display: none">
+        <div class="container-xl pt-3" id="tabByCIS" style="display: none">
+
+          <h4 id="cispackageTotalText"></h4>
 
           <form class="d-flex" id="searchCISForm">
             <input class="form-control me-2" type="search" placeholder="Type CIS here..." aria-label="Search"

@@ -215,6 +215,36 @@ async function getAllTimePackages(startDate, endDate, time) {
     return allTimePackages
 }
 
+// get all uncollected parcels from specific user
+async function getOneStudentPackages(searchCIS) {
+
+    var studentPackages = []
+    const studentPackagesFirebase = collection(db, currentCollege, searchCIS, "packages")
+
+    const querySnapshot = await getDocs(studentPackagesFirebase);
+    querySnapshot.forEach((doc) => {
+
+        packageInfo = doc.data()
+        docID = doc.id
+        packageInfo["id"] = docID
+        studentPackages.push(packageInfo)
+
+    });
+
+    studentPackages.sort(function (a, b) {
+        var aArrivedTime = a.arrivedTime;
+        var bArrivedTime = b.arrivedTime;
+        if (aArrivedTime > bArrivedTime) {
+            return 1;
+        } else if (aArrivedTime < bArrivedTime) {
+            return -1;
+        }
+    })
+
+    return studentPackages
+
+}
+
 
 
 
@@ -392,4 +422,4 @@ async function getAllTimePackages(startDate, endDate, time) {
 
 
 module.exports = { addPackageFirebase, getOneStuAllUncollectedPackages, updateFirebaseToCollected, updateFirebaseToUncollected,
-    getRecentCollectedPackages, getCISusingUID, updateCampusCardUID, getAllUncollectedPackages, getAllTimePackages };
+    getRecentCollectedPackages, getCISusingUID, updateCampusCardUID, getAllUncollectedPackages, getAllTimePackages, getOneStudentPackages };

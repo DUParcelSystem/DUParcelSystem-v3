@@ -1,5 +1,6 @@
-const { getAllUncollectedPackages, getAllTimePackages } = require('../firebase.js');
+const { getAllUncollectedPackages, getAllTimePackages, getOneStudentPackages } = require('../firebase.js');
 const { database, sortAllUncollected, sortByLastName } = require('../readJSON.js');
+const { ipcRenderer } = require('electron')
 
 const searchByUncollectedBtn = document.getElementById("searchByUncollectedBtn")
 const searchByArrivedDateBtn = document.getElementById("searchByArrivedDateBtn")
@@ -13,11 +14,22 @@ const tabByCIS = document.getElementById("tabByCIS")
 
 getAllUncollected()
 
+document.getElementById("printToPDF").addEventListener('click', () => {
+
+    document.getElementById("printToPDF").blur()
+
+    ipcRenderer.send('print-to-pdf')
+
+
+})
+
 searchByUncollectedBtn.addEventListener('click', async () => {
 
     if (searchByUncollectedBtn.classList.contains("active")) {
         return
     }
+
+    document.getElementById("UncollectedpackageTotalText").innerText = ''
 
     getAllUncollected()
 
@@ -39,7 +51,13 @@ searchByArrivedDateBtn.addEventListener('click', () => {
         return
     }
 
-    document.getElementById("packageTotalText").innerText = ''
+    document.getElementById("arrivedDateForm").reset()
+    const table = document.getElementById("arrivedDateTable")
+    while (table.rows.length > 1) {
+        table.deleteRow(1);
+    }
+
+    document.getElementById("arrivedTimepackageTotalText").innerText = ''
 
     searchByUncollectedBtn.classList.remove("active");
     searchByArrivedDateBtn.classList.add("active")
@@ -56,6 +74,8 @@ searchByArrivedDateBtn.addEventListener('click', () => {
 document.getElementById('arrivedDateForm').addEventListener("submit", async function (event) {
     event.preventDefault();
 
+    document.getElementById('viewPackagesArrivedDate').blur()
+    document.getElementById('viewPackagesArrivedDateBtn').blur()
     const dateStr = document.getElementById('viewPackagesArrivedDate').value
     const startDate = new Date(dateStr);
     var endDate = new Date(dateStr);
@@ -65,21 +85,25 @@ document.getElementById('arrivedDateForm').addEventListener("submit", async func
 
     allArrivedTimePackages = sortByLastName(allArrivedTimePackages)
 
-    showAllTimePackages(allArrivedTimePackages, "arrivedDateTable")
+    showAllTimePackages(allArrivedTimePackages, "arrivedDateTable", "arrivedTimepackageTotalText", "")
 
 });
 
 
 
 searchByCollectedDateBtn.addEventListener('click', () => {
-    console.log("by date");
 
     if (searchByCollectedDateBtn.classList.contains("active")) {
-        console.log("clicked again");
         return
     }
 
-    document.getElementById("packageTotalText").innerText = ''
+    document.getElementById("collectedDateForm").reset()
+    const table = document.getElementById("collectedDateTable")
+    while (table.rows.length > 1) {
+        table.deleteRow(1);
+    }
+
+    document.getElementById("collectedTimepackageTotalText").innerText = ''
 
     searchByUncollectedBtn.classList.remove("active");
     searchByArrivedDateBtn.classList.remove("active")
@@ -96,6 +120,8 @@ searchByCollectedDateBtn.addEventListener('click', () => {
 document.getElementById('collectedDateForm').addEventListener("submit", async function (event) {
     event.preventDefault();
 
+    document.getElementById('viewPackagesCollectedDate').blur()
+    document.getElementById('viewPackagesCollectedDateBtn').blur()
     const dateStr = document.getElementById('viewPackagesCollectedDate').value
     const startDate = new Date(dateStr);
     var endDate = new Date(dateStr);
@@ -105,19 +131,25 @@ document.getElementById('collectedDateForm').addEventListener("submit", async fu
 
     allCollectedTimePackages = sortByLastName(allCollectedTimePackages)
 
-    showAllTimePackages(allCollectedTimePackages, "collectedDateTable")
+    showAllTimePackages(allCollectedTimePackages, "collectedDateTable", "collectedTimepackageTotalText", "")
 
 
 });
 
 
 searchByStudentBtn.addEventListener('click', () => {
-    console.log("by student");
 
     if (searchByStudentBtn.classList.contains("active")) {
-        console.log("clicked again");
         return
     }
+
+    document.getElementById("searchCISForm").reset()
+    const table = document.getElementById("cisTable")
+    while (table.rows.length > 1) {
+        table.deleteRow(1);
+    }
+
+    document.getElementById("cispackageTotalText").innerText = ''
 
     searchByUncollectedBtn.classList.remove("active");
     searchByArrivedDateBtn.classList.remove("active")
@@ -134,15 +166,25 @@ searchByStudentBtn.addEventListener('click', () => {
 document.getElementById('searchCISForm').addEventListener("submit", async function (event) {
     event.preventDefault();
 
-    // const dateStr = document.getElementById('viewPackagesCollectedDate').value
-    // const startDate = new Date(dateStr);
-    // var endDate = new Date(dateStr);
-    // endDate.setDate(endDate.getDate() + 1);
+    const searchCIS = document.getElementById('searchCISSearchBox').value
+    document.getElementById('searchCISSearchBox').blur()
+    const tableId = "cisTable"
 
-    // var allCollectedTimePackages = await getAllTimePackages(startDate, endDate, "collectedTime")
+    if (database[searchCIS] == null) {
+        // show things about no such user
+        const table = document.getElementById(tableId)
 
-    // showAllTimePackages(allCollectedTimePackages, "collectedDateTable")
+        while (table.rows.length > 1) {
+            table.deleteRow(1);
+        }
+        console.log("no such user");
+        document.getElementById("cispackageTotalText").innerText = "No such student"
+        return
+    }
 
+    var studentAllPackages = await getOneStudentPackages(searchCIS)
+
+    showAllTimePackages(studentAllPackages, tableId, "cispackageTotalText", searchCIS)
 
 });
 
@@ -206,13 +248,13 @@ async function getAllUncollected() {
 
     const totalPackagesNum = letterNum + parcelNum
     const totalText = `${totalPackagesNum} uncollected packages: ${parcelNum} parcels and ${letterNum} letters`
-    document.getElementById("packageTotalText").innerText = totalText
+    document.getElementById("UncollectedpackageTotalText").innerText = totalText
 
 }
 
 
 
-function showAllTimePackages(allTimePackages, tableId) {
+function showAllTimePackages(allTimePackages, tableId, titleId, searchCIS) {
 
     var letterNum = 0;
     var parcelNum = 0;
@@ -294,7 +336,10 @@ function showAllTimePackages(allTimePackages, tableId) {
     }
 
     const totalPackagesNum = letterNum + parcelNum
-    const totalText = `${totalPackagesNum} uncollected packages: ${parcelNum} parcels and ${letterNum} letters`
-    document.getElementById("packageTotalText").innerText = totalText
+    var totalText = `${totalPackagesNum} packages: ${parcelNum} parcels and ${letterNum} letters`
+    if (searchCIS != "") {
+        totalText += ` - ${searchCIS}`
+    }
+    document.getElementById(titleId).innerText = totalText
 }
 

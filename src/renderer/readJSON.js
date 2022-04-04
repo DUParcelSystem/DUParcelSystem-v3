@@ -7,7 +7,7 @@ const database = JSON.parse(fs.readFileSync(path.join(__dirname, '../../', 'data
 // function to find student last name
 function findStudent(searchLastName, checkBox) {
 
-    const searchStudent = [];
+    var searchStudent = [];
 
     if (searchLastName == '') {
         return [];
@@ -85,7 +85,6 @@ function sortAllUncollected(allUncollectedPackagesUnsort) {
         }
     });
 
-    console.log("sorted");
     return allUncollectedPackagesUnsort
 }
 

@@ -1,6 +1,8 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, shell } = require('electron')
 const path = require('path')
 const config = require('config');
+const fs = require('fs')
+const os = require('os')
 
 const currentCollege = config.get('currentCollege');
 const displayCollegeName = config.get('displayCollegeName');
@@ -20,9 +22,22 @@ function createWindow() {
     })
 
 
-    //   ipcMain.on('collectParcelPage', (event) => {
-    //     console.log("You are on collect parcel");
-    //   })
+    ipcMain.on('print-to-pdf', (event) => {
+        console.log("going to print");
+
+        const pdfPath = path.join(os.homedir(), 'Desktop', 'temp.pdf')
+        win.webContents.printToPDF({}).then(data => {
+          fs.writeFile(pdfPath, data, (error) => {
+            if (error) throw error
+            console.log(`Wrote PDF successfully to ${pdfPath}`)
+          })
+        }).catch(error => {
+          console.log(`Failed to write PDF to ${pdfPath}: `, error)
+        })
+
+    })
+
+
 
     win.loadFile('src/renderer/viewParcels/viewParcels.html')
 
@@ -72,6 +87,8 @@ function createWindow() {
 
 }
 
+
+
 app.whenReady().then(() => {
     createWindow()
 
@@ -82,16 +99,13 @@ app.whenReady().then(() => {
     })
 })
 
-// app.on('window-all-closed', () => {
-//     // if (process.platform !== 'darwin') {
-//         app.quit()
-//     // }
-// })
+app.on('window-all-closed', () => {
+    // if (process.platform !== 'darwin') {
+        app.quit()
+    // }
+})
 
-// app.on('before-quit', () => {
-//     setTimeout(myGreeting, 5000)
-//     console.log("before quit");
-// })
+
 
 
 

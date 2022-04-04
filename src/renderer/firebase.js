@@ -81,11 +81,11 @@ async function getOneStuAllUncollectedPackages(searchCIS) {
     });
 
     uncollectedPackages.sort(function (a, b) {
-        var aLastName = a.arrivedTime;
-        var bLastName = b.arrivedTime;
-        if (aLastName > bLastName) {
+        var aArrivedTime = a.arrivedTime;
+        var bArrivedTime = b.arrivedTime;
+        if (aArrivedTime > bArrivedTime) {
             return 1;
-        } else if (aLastName < bLastName) {
+        } else if (aArrivedTime < bArrivedTime) {
             return -1;
         }
     })
@@ -168,7 +168,6 @@ async function getCISusingUID(uid) {
 
 // update UID for card
 // const uid = "04:11:5D:12:28:6B:80";
-
 async function updateCampusCardUID(cis, uid) {
     const updateRef = doc(db, currentCollege, cis)
 
@@ -179,31 +178,74 @@ async function updateCampusCardUID(cis, uid) {
 }
 
 
-
 // get all uncollected parcels from all users
-// async function getAllUncollectedPackages(searchCIS) {
+async function getAllUncollectedPackages() {
 
-//     var uncollectedPackages = {}
-//     const uncollectedPackagesFirebase = query(collectionGroup(db, 'packages'), where('collected', '==', false));
+    var allUncollectedPackages = []
+    const allUncollectedPackagesFirebase = query(collectionGroup(db, 'packages'), where('collected', '==', false));
 
-//     const querySnapshot = await getDocs(uncollectedPackagesFirebase);
-//     querySnapshot.forEach((doc) => {
+    const querySnapshot = await getDocs(allUncollectedPackagesFirebase);
+    querySnapshot.forEach((doc) => {
 
-//         docID = doc.id
+        packageInfo = doc.data()
+        docID = doc.id
+        packageInfo["id"] = docID
+        allUncollectedPackages.push(packageInfo)
 
-//         uncollectedPackages[docID] = doc.data()
+    });
 
-//         console.log(doc.id, ' => ', doc.data());
+    return allUncollectedPackages
+}
 
-//         // console.log(uncollectedPackages);
+async function getAllTimePackages(startDate, endDate, time) {
 
-//     });
+    var allTimePackages = []
+    const allTimePackagesFirebase = query(collectionGroup(db, 'packages'), where(time, '>=', startDate), where(time, '<=', endDate), orderBy(time));
 
-//     console.log(uncollectedPackages);
+    const querySnapshot = await getDocs(allTimePackagesFirebase);
+    querySnapshot.forEach((doc) => {
 
-//     // return
+        packageInfo = doc.data()
+        docID = doc.id
+        packageInfo["id"] = docID
+        allTimePackages.push(packageInfo)
 
-// }
+    });
+
+    return allTimePackages
+}
+
+// get all uncollected parcels from specific user
+async function getOneStudentPackages(searchCIS) {
+
+    var studentPackages = []
+    const studentPackagesFirebase = collection(db, currentCollege, searchCIS, "packages")
+
+    const querySnapshot = await getDocs(studentPackagesFirebase);
+    querySnapshot.forEach((doc) => {
+
+        packageInfo = doc.data()
+        docID = doc.id
+        packageInfo["id"] = docID
+        studentPackages.push(packageInfo)
+
+    });
+
+    studentPackages.sort(function (a, b) {
+        var aArrivedTime = a.arrivedTime;
+        var bArrivedTime = b.arrivedTime;
+        if (aArrivedTime > bArrivedTime) {
+            return 1;
+        } else if (aArrivedTime < bArrivedTime) {
+            return -1;
+        }
+    })
+
+    return studentPackages
+
+}
+
+
 
 
 
@@ -380,4 +422,4 @@ async function updateCampusCardUID(cis, uid) {
 
 
 module.exports = { addPackageFirebase, getOneStuAllUncollectedPackages, updateFirebaseToCollected, updateFirebaseToUncollected,
-    getRecentCollectedPackages, getCISusingUID, updateCampusCardUID };
+    getRecentCollectedPackages, getCISusingUID, updateCampusCardUID, getAllUncollectedPackages, getAllTimePackages, getOneStudentPackages };

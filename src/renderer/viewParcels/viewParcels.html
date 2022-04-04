@@ -10,7 +10,7 @@
 <body>
     <nav class="navbar navbar-expand navbar-light bg-light">
       <div class="container-fluid">
-        <a class="navbar-brand mb-0 h1" href="#" id="title">❄️ John Snow Parcel System 📦</a>
+        <a class="navbar-brand mb-0 h1" href="#" id="title">DU Parcel System</a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav nav-pills me-auto">
             <li class="nav-item">
@@ -30,16 +30,136 @@
       </div>
     </nav>
 
-    <div class="alert alert-primary" role="alert">
-      A simple primary alert—check it out!
-
-      View Parcel
+    <div class="container-xl pt-3" id="searchTabs">
+      <div class="row">
+        <div class="col-10">
+          <ul class="nav nav-tabs">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#" id="searchByUncollectedBtn">All uncollected packages</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="searchByArrivedDateBtn">By arrived date</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="searchByCollectedDateBtn">By collected date</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="searchByStudentBtn">By student</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-2 text-end">
+          <button type="button" class="btn btn-outline-secondary" id="printToPDF">Print to pdf</button>
+        </div>
+      </div>
     </div>
 
-    <form>
-      <label for="viewPackagesDate">View packages date on:</label>
-      <input type="date" id="viewPackagesDate" name="viewPackagesDate">
-    </form>
+
+    <div class="container-xl pt-3" id="tabAllUncollected">
+
+      <h4 id="UncollectedpackageTotalText"></h4>
+
+      <table class="table table-bordered" id="uncollectedTable">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">First</th>
+            <th scope="col">Last</th>
+            <th scope="col">Type</th>
+            <th scope="col">Arrived Time</th>
+            <th scope="col">Parcel No</th>
+            <th scope="col">Collected</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+
+
+    <div class="container-xl pt-3" id="tabByArrivedDate" style="display: none">
+
+      <h4 id="arrivedTimepackageTotalText"></h4>
+
+      <form id="arrivedDateForm">
+        <label for="viewPackagesArrivedDate">View packages arrived date on:</label>
+        <input type="date" id="viewPackagesArrivedDate" name="viewPackagesArrivedDate">
+        <button class="btn btn-outline-success" type="submit" id="viewPackagesArrivedDateBtn">Search</button>
+      </form>
+
+        <table class="table table-bordered mt-2" id="arrivedDateTable">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">First</th>
+              <th scope="col">Last</th>
+              <th scope="col">Type</th>
+              <th scope="col">Arrived Time</th>
+              <th scope="col">Collected Time</th>
+              <th scope="col">Parcel No</th>
+              <th scope="col">Collected</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="container-xl pt-3" id="tabByCollectedDate" style="display: none">
+
+        <h4 id="collectedTimepackageTotalText"></h4>
+
+        <form id="collectedDateForm">
+          <label for="viewPackagesCollectedDate">View packages collected date on:</label>
+          <input type="date" id="viewPackagesCollectedDate" name="viewPackagesCollectedDate">
+          <button class="btn btn-outline-success" type="submit" id="viewPackagesCollectedDateBtn">Search</button>
+        </form>
+
+          <table class="table table-bordered mt-2" id="collectedDateTable">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">First</th>
+                <th scope="col">Last</th>
+                <th scope="col">Type</th>
+                <th scope="col">Arrived Time</th>
+                <th scope="col">Collected Time</th>
+                <th scope="col">Parcel No</th>
+                <th scope="col">Collected</th>
+              </tr>
+            </thead>
+            <tbody>
+          </table>
+        </div>
+
+
+        <div class="container-xl pt-3" id="tabByCIS" style="display: none">
+
+          <h4 id="cispackageTotalText"></h4>
+
+          <form class="d-flex" id="searchCISForm">
+            <input class="form-control me-2" type="search" placeholder="Type CIS here..." aria-label="Search"
+              maxlength="6" id="searchCISSearchBox">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+
+            <table class="table table-bordered mt-3" id="cisTable">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">First</th>
+                  <th scope="col">Last</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Arrived Time</th>
+                  <th scope="col">Collected Time</th>
+                  <th scope="col">Parcel No</th>
+                  <th scope="col">Collected</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+
+
+
+
 
     <script src="./viewParcels.js"></script>
 </body>

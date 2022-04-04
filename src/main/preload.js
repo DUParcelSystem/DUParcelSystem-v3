@@ -3,8 +3,6 @@ const displayCollegeName = config.get('displayCollegeName');
 
 window.addEventListener('DOMContentLoaded', () => {
 
-    console.log("DOMContentload");
-
     document.getElementById("title").innerHTML = displayCollegeName;
 
     const url = window.location.href
@@ -13,7 +11,6 @@ window.addEventListener('DOMContentLoaded', () => {
     currentPage = htmlText.replace(".html", "")
 
     console.log(currentPage);
-
 
   })
 

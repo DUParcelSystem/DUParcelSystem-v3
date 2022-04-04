@@ -2,12 +2,6 @@ const { database, findStudent } = require('../readJSON.js');
 const { addPackageFirebase } = require('../firebase.js');
 const { serverTimestamp } = require('firebase/firestore');
 const fullName = require('fullname');
-require('dotenv').config();
-
-
-document.getElementById("windowtitle").innerHTML = process.env.COLLEGE;
-document.getElementById("title").innerHTML = process.env.COLLEGE;
-
 
 var addPackages = []
 var searchStudent = []

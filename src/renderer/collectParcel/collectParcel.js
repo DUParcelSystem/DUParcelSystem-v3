@@ -9,7 +9,7 @@ var searchCIS = ''
 var totalUncollectedPackageNum = 0
 var num = 0
 var showPackagesId = []
-var cannotFindPackagesArray = []
+// var cannotFindPackagesArray = []
 var recentCollectToUncollectNum = 0
 
 var pcUserName;
@@ -52,7 +52,7 @@ ipcRenderer.on('nfc-uid-main', async function (event, uid) {
 ipcRenderer.on('nfc-uid-error', async function (event, err) {
     console.log("error: ", err);
 
-    showStudInfoError("N/A", "Error", "Tap", "student card", "again")
+    document.getElementById("nfcReaderText").innerHTML = message
 
 })
 
@@ -210,7 +210,7 @@ function showCannotFindPackages(packageInfo) {
 
     const title = document.getElementById("cannotFindPackageTitle").innerText
     const titleArray = title.split(" ")
-    num = parseInt(titleArray[0]) + 1
+    num = num + 1
     document.getElementById("cannotFindPackageTitle").innerText = `${num} packages were just uncollected`
 
     document.getElementById("uncollectedPackages").innerHTML += `
@@ -222,14 +222,11 @@ function showCannotFindPackages(packageInfo) {
                     <div class="col-sm-2 text-start">
                         <h4 class="card-title">${packageType}</h4>
                     </div>
-                    <div class="col-sm-2 text-start">
+                    <div class="col-sm-4 text-start">
                         <h4 class="card-title">${parcelNo}</h4>
                     </div>
-                    <div class="col-sm-4 text-start">
+                    <div class="col-sm-6 text-start">
                         <p class="card-text">Arrived on: <b>${times.arrivedTime}</b></p>
-                    </div>
-                    <div class="col-sm-4 text-end">
-                        <button type="button" class="btn btn-success" id="cannotFind-${packageId}">Collected<p hidden>*${packageId}*</p></button>
                     </div>
                     </div>
                 </div>
@@ -270,29 +267,178 @@ function showCannotFindPackages(packageInfo) {
             </div>
         </div>`
 
-    cannotFindPackagesArray.push(packageInfo)
+        // <div class="col-sm-4 text-end">
+        //     <button type="button" class="btn btn-success" id="cannotFind-${packageId}">Collected<p hidden>*${packageId}*</p></button>
+        // </div>
 
-    addUncollectedToCollectedListener()
+    // cannotFindPackagesArray.push(packageInfo)
+
+    // addUncollectedToCollectedListener()
 
 }
 
-function addUncollectedToCollectedListener() {
+// function addUncollectedToCollectedListener() {
 
-    for (let i = 0; i < cannotFindPackagesArray.length; i++) {
-        const packageId = cannotFindPackagesArray[i].id
-        console.log("added one", packageId);
+//     for (let i = 0; i < cannotFindPackagesArray.length; i++) {
+//         const packageInfo = cannotFindPackagesArray[i]
+//         var packageType = packageInfo.type
+//         const packageId = packageInfo.id
+//         console.log("added one", packageId);
 
-        document.getElementById(`cannotFind-${packageId}`).addEventListener("click", function (event) {
+//         document.getElementById(`cannotFind-${packageId}`).addEventListener("click", function (event) {
 
-            console.log("collected");
+//             console.log("collected");
+//             document.getElementById(`card-${packageId}`).style.display = "none";
+
+//             const untitle = document.getElementById("allUncollectedPackageTitle").innerText
+//             const untitleArray = untitle.split(" ")
+//             const unNum = parseInt(untitleArray[0]) + 1
+//             document.getElementById("allUncollectedPackageTitle").innerText = `${unNum} packages were just collected`
+
+//             num = num - 1
+//             document.getElementById("cannotFindPackageTitle").innerText = `${num} packages were just uncollected`
+
+//             // showPackagesId.push(packageId)
+
+//             if (packageType == "Letter") {
+//                 packageType = "Letter ✉️";
+//             } else if (packageType == "Parcel") {
+//                 packageType = "Parcel 📦";
+//             }
+
+//             var date = new Date()
+//             const unixNow = Math.floor(date.getTime() / 1000)
+
+//             times = {
+//                 arrivedTime: packageInfo.arrivedTime.seconds,
+//                 collectedTime: unixNow
+//             }
+
+//             if (packageInfo.arrivedEmailSent == null) {
+//                 times["arrivedEmailSent"] = "email not sent yet"
+//             } else {
+//                 times["arrivedEmailSent"] = packageInfo.arrivedEmailSent.seconds
+//             }
+
+//             for (const [time, unix] of Object.entries(times)) {
+
+//                 if (Number.isInteger(unix)) {
+//                     const firebaseTime = unix * 1000
+
+//                     const firebaseTimeMili = new Date(firebaseTime)
+//                     const option = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric", hour12: true }
+//                     const localTimeString = firebaseTimeMili.toLocaleString("en-GB", option)
+
+//                     times[time] = localTimeString
+//                 }
+//             }
+
+//             var parcelNo = packageInfo.parcelNo
+//             var parcelNoShow = packageInfo.parcelNo
+
+//             if (parcelNo == null) {
+//                 parcelNo = ''
+//                 parcelNoShow = 'N/A'
+//             }
+
+//             var reminderEmails = packageInfo.reminderEmails
+
+//             if (reminderEmails == null) {
+//                 reminderEmails = "N/A"
+//             }
+
+//             document.getElementById("accordion").innerHTML += `
+//                 <div class="card text-white bg-success mt-2" id="card-${packageId}">
+//                     <div class="card-header btn btn-lin text-white" id="heading-${packageId}" data-bs-toggle="collapse" data-bs-target="#collapse-${packageId}"
+//                     aria-expanded="true" aria-controls="collapse-${packageId}">
+//                         <div class="container">
+//                             <div class="row">
+//                             <div class="col-sm-2 text-start">
+//                                 <h4 class="card-title">${packageType}</h4>
+//                             </div>
+//                             <div class="col-sm-2 text-start">
+//                                 <h4 class="card-title">${parcelNo}</h4>
+//                             </div>
+//                             <div class="col-sm-4 text-start">
+//                                 <p class="card-text">Arrived on: <b>${times.arrivedTime}</b></p>
+//                             </div>
+//                             <div class="col-sm-4 text-end">
+//                                 <button type="button" class="btn btn-danger" id="uncollect-${i}">Uncollect<p hidden>*${packageId}*</p></button>
+//                             </div>
+//                             </div>
+//                         </div>
+//                     </div>
+
+//                     <div id="collapse-${packageId}" class="collapse" aria-labelledby="heading-${packageId}" data-parent="#accordion">
+//                         <div class="card-body">
+//                             <div class="container">
+//                                 <div class="row border-bottom border-dark">
+//                                     <div class="col">
+//                                         Type: ${packageType}
+//                                         <br>
+//                                         Package no: ${parcelNoShow}
+//                                         <br>
+//                                         Package id: ${packageId}
+//                                         <br>
+//                                         Reminder emails: ${reminderEmails}
+//                                     </div>
+//                                 </div>
+//                                 <div class="row mt-1">
+//                                     <div class="col">
+//                                         Arrived date: ${times.arrivedTime}
+//                                         <br>
+//                                         Arrived by: ${packageInfo.arrivedBy}
+//                                         <br>
+//                                         Notified email sent: ${times.arrivedEmailSent}
+//                                     </div>
+//                                     <div class="col">
+//                                         Collected date: ${times.collectedTime}
+//                                         <br>
+//                                         Given out by: ${pcUserName}
+//                                         <br>
+//                                         Collected: Yes
+//                                     </div>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>`
+
+//             document.getElementById(`uncollect-${i}`).addEventListener("click", function (event) {
+//                 // let packageInfoText = document.getElementById(`uncollect-${i}`).innerHTML.split('*')
+//                 // let arrayIndex = packageInfoText[1].id
+
+//                 console.log("uncollected!!!!!!!!!!!");
+
+//                 const packageInfo = uncollectedPackages[i]
+
+//                 console.log("collected time?", packageInfo);
+
+//                 var parcelNoShow = packageInfo.parcelNo
+//                 if (parcelNoShow == null) {
+//                     parcelNoShow = 'N/A'
+//                 }
+
+//                 document.getElementById("uncollectModalText").innerHTML = `You have selected
+//                 <br>Name: <b>${database[packageInfo.cis].email}</b>
+//                 <br>Type: <b>${packageInfo.type}</b>
+//                 <br>Package no: <b>${parcelNoShow}</b>
+//                 <br>Package id: <b>${packageInfo.id}</b>
+//                 <br>Arrived on: <b>${times.arrivedTime}</b>
+//                 <br>Collected on: <b>${times.collectedTime}</b>
+//                 `
+
+//                 showModal()
+
+//                 document.getElementById("uncollectModalInfo").innerHTML = `*${JSON.stringify(packageInfo)}*`
+
+//             });
 
 
+//         });
+//     }
 
-
-        });
-    }
-
-};
+// };
 
 
 async function showUncollectedPackages(searchCIS) {

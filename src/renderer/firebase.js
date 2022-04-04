@@ -81,11 +81,11 @@ async function getOneStuAllUncollectedPackages(searchCIS) {
     });
 
     uncollectedPackages.sort(function (a, b) {
-        var aLastName = a.arrivedTime;
-        var bLastName = b.arrivedTime;
-        if (aLastName > bLastName) {
+        var aArrivedTime = a.arrivedTime;
+        var bArrivedTime = b.arrivedTime;
+        if (aArrivedTime > bArrivedTime) {
             return 1;
-        } else if (aLastName < bLastName) {
+        } else if (aArrivedTime < bArrivedTime) {
             return -1;
         }
     })
@@ -181,19 +181,41 @@ async function updateCampusCardUID(cis, uid) {
 // get all uncollected parcels from all users
 async function getAllUncollectedPackages() {
 
-    var allUncollectedPackages = {}
+    var allUncollectedPackages = []
     const allUncollectedPackagesFirebase = query(collectionGroup(db, 'packages'), where('collected', '==', false));
 
     const querySnapshot = await getDocs(allUncollectedPackagesFirebase);
     querySnapshot.forEach((doc) => {
+
+        packageInfo = doc.data()
         docID = doc.id
-        allUncollectedPackages[docID] = doc.data()
-        console.log(doc.id, ' => ', doc.data());
+        packageInfo["id"] = docID
+        allUncollectedPackages.push(packageInfo)
+
     });
 
-    console.log(allUncollectedPackages);
-    return
+    return allUncollectedPackages
 }
+
+async function getAllTimePackages(startDate, endDate, time) {
+
+    var allTimePackages = []
+    const allTimePackagesFirebase = query(collectionGroup(db, 'packages'), where(time, '>=', startDate), where(time, '<=', endDate), orderBy(time));
+
+    const querySnapshot = await getDocs(allTimePackagesFirebase);
+    querySnapshot.forEach((doc) => {
+
+        packageInfo = doc.data()
+        docID = doc.id
+        packageInfo["id"] = docID
+        allTimePackages.push(packageInfo)
+
+    });
+
+    return allTimePackages
+}
+
+
 
 
 
@@ -370,4 +392,4 @@ async function getAllUncollectedPackages() {
 
 
 module.exports = { addPackageFirebase, getOneStuAllUncollectedPackages, updateFirebaseToCollected, updateFirebaseToUncollected,
-    getRecentCollectedPackages, getCISusingUID, updateCampusCardUID, getAllUncollectedPackages };
+    getRecentCollectedPackages, getCISusingUID, updateCampusCardUID, getAllUncollectedPackages, getAllTimePackages };

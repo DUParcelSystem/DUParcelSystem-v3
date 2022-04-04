@@ -30,12 +30,6 @@
       </div>
     </nav>
 
-    <!-- <div class="alert alert-primary" role="alert">
-      A simple primary alert—check it out!
-
-      View Parcel, by date, by uncollected, by cis
-    </div> -->
-
     <div class="container-xl pt-3" id="searchTabs">
       <ul class="nav nav-tabs">
         <li class="nav-item">
@@ -51,10 +45,11 @@
           <a class="nav-link" href="#" id="searchByStudentBtn">By student</a>
         </li>
       </ul>
+        <h4 id="packageTotalText" class="pt-3"></h4>
     </div>
 
 
-    <div class="container-xl pt-3" id="tabAllUncollected">
+    <div class="container-xl pt-2" id="tabAllUncollected">
 
       <table class="table table-bordered" id="uncollectedTable">
         <thead class="thead-dark">
@@ -68,27 +63,20 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>AARON</td>
-            <td>CHEUNG</td>
-            <td>Parcel 📦</td>
-            <td>30 March 2022 10:30am</td>
-            <td>N/A</td>
-            <td>No</td>
-          </tr>
         </tbody>
       </table>
     </div>
 
 
-    <div class="container-xl pt-3" id="tabByArrivedDate" style="display: none">
+    <div class="container-xl pt-2" id="tabByArrivedDate" style="display: none">
 
-      <form>
+      <form id="arrivedDateForm">
         <label for="viewPackagesArrivedDate">View packages arrived date on:</label>
         <input type="date" id="viewPackagesArrivedDate" name="viewPackagesArrivedDate">
+        <button class="btn btn-outline-success" type="submit">Search</button>
       </form>
 
-        <table class="table table-bordered" id="arrivedDateTable">
+        <table class="table table-bordered mt-2" id="arrivedDateTable">
           <thead class="thead-dark">
             <tr>
               <th scope="col">First</th>
@@ -101,27 +89,19 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>AARON</td>
-              <td>CHEUNG</td>
-              <td>Parcel 📦</td>
-              <td>30 March 2022 10:30am</td>
-              <td>30 March 2022 10:30am</td>
-              <td>N/A</td>
-              <td>No</td>
-            </tr>
           </tbody>
         </table>
       </div>
 
-      <div class="container-xl pt-3" id="tabByCollectedDate" style="display: none">
+      <div class="container-xl pt-2" id="tabByCollectedDate" style="display: none">
 
-        <form>
+        <form id="collectedDateForm">
           <label for="viewPackagesCollectedDate">View packages collected date on:</label>
           <input type="date" id="viewPackagesCollectedDate" name="viewPackagesCollectedDate">
+          <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
 
-          <table class="table table-bordered" id="collectedDateTable">
+          <table class="table table-bordered mt-2" id="collectedDateTable">
             <thead class="thead-dark">
               <tr>
                 <th scope="col">First</th>
@@ -134,21 +114,11 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>AARON</td>
-                <td>CHEUNG</td>
-                <td>Parcel 📦</td>
-                <td>30 March 2022 10:30am</td>
-                <td>30 March 2022 10:30am</td>
-                <td>N/A</td>
-                <td>No</td>
-              </tr>
-            </tbody>
           </table>
         </div>
 
 
-        <div class="container-xl pt-3" id="tabByCIS" style="display: none">
+        <div class="container-xl pt-2" id="tabByCIS" style="display: none">
 
           <form class="d-flex" id="searchCISForm">
             <input class="form-control me-2" type="search" placeholder="Type CIS here..." aria-label="Search"
@@ -156,7 +126,7 @@
             <button class="btn btn-outline-success" type="submit">Search</button>
           </form>
 
-            <table class="table table-bordered" id="cisTable">
+            <table class="table table-bordered mt-3" id="cisTable">
               <thead class="thead-dark">
                 <tr>
                   <th scope="col">First</th>
@@ -169,15 +139,6 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>AARON</td>
-                  <td>CHEUNG</td>
-                  <td>Parcel 📦</td>
-                  <td>30 March 2022 10:30am</td>
-                  <td>30 March 2022 10:30am</td>
-                  <td>N/A</td>
-                  <td>No</td>
-                </tr>
               </tbody>
             </table>
           </div>

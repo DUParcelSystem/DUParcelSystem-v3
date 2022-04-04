@@ -25,6 +25,12 @@ function findStudent(searchLastName, checkBox) {
         }
     };
 
+    searchStudent = sortByLastName(searchStudent)
+
+    return searchStudent
+}
+
+function sortByLastName(searchStudent) {
     // sort array of dict by their last name and then first name
     searchStudent.sort(function (a, b) {
         var aLastName = a.lName;
@@ -45,9 +51,46 @@ function findStudent(searchLastName, checkBox) {
             }
         }
     });
-
     return searchStudent
 }
 
+function sortAllUncollected(allUncollectedPackagesUnsort) {
 
-module.exports = { database, findStudent };
+    // sort array of dict by their last name and then first name
+    allUncollectedPackagesUnsort.sort(function (a, b) {
+        var aArrivedTime = a.arrivedTime;
+        var bArrivedTime = b.arrivedTime;
+        if (aArrivedTime > bArrivedTime) {
+            return 1;
+        } else if (aArrivedTime < bArrivedTime) {
+            return -1;
+        } else {
+            var aLastName = a.lName;
+            var bLastName = b.lName;
+            if (aLastName > bLastName) {
+                return 1;
+            } else if (aLastName < bLastName) {
+                return -1;
+            } else {
+                var aFirstName = a.fName;
+                var bFirstName = b.fName;
+                if (aFirstName > bFirstName) {
+                    return 1;
+                } else if (aFirstName < bFirstName) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        }
+    });
+
+    console.log("sorted");
+    return allUncollectedPackagesUnsort
+}
+
+
+
+
+
+module.exports = { database, findStudent, sortAllUncollected, sortByLastName };

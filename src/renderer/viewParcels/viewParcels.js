@@ -1,6 +1,7 @@
 const { getAllUncollectedPackages, getAllTimePackages, getOneStudentPackages } = require('../firebase.js');
 const { database, sortAllUncollected, sortByLastName } = require('../readJSON.js');
-const { ipcRenderer } = require('electron')
+const { ipcRenderer } = require('electron');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 const searchByUncollectedBtn = document.getElementById("searchByUncollectedBtn")
 const searchByArrivedDateBtn = document.getElementById("searchByArrivedDateBtn")
@@ -12,6 +13,7 @@ const tabByArrivedDate = document.getElementById("tabByArrivedDate")
 const tabByCollectedDate = document.getElementById("tabByCollectedDate")
 const tabByCIS = document.getElementById("tabByCIS")
 
+pcUserName = 'James'
 var onTab = "allUncollected"
 var onDate = ''
 
@@ -195,6 +197,53 @@ document.getElementById('searchCISForm').addEventListener("submit", async functi
 
 });
 
+
+// function outputCSV(data) {
+//     data = [
+//         {
+//             arrivedBy: "Aaron Cheung",
+//             arrivedEmailSent: null,
+//             arrivedTime: {
+//                 seconds: 1649260367,
+//                 nanoseconds: 844000000
+//             },
+//             cis: "drwm68",
+//             collected: false,
+//             collectedTime: null,
+//             givenOutBy: null,
+//             id: "atYHxLKqDBVpQ"
+//         }
+//     ]
+// }
+
+
+async function outputCSV() {
+    const allUncollectedPackagesUnsort = await getAllUncollectedPackages()
+    const data = sortAllUncollected(allUncollectedPackagesUnsort)
+    for (let i = 0; i < data.length; i++) {
+        let package = data[i]
+        let userCIS = package.cis
+        data[i].firstName = database[userCIS]["fName"]
+        data[i].lastName = database[userCIS]["lName"]
+    }
+
+    const csvWriter = createCsvWriter({
+        path: 'out.csv',
+        header: [
+            {id: 'firstName', title: 'First Name'},
+            {id: 'lastName', title: 'Last Name'},
+            {id: 'cis', title: 'CIS'},
+            {id: 'type', title: 'Type'},
+            {id: 'arrivedTime', title: 'Arrived Time'},
+            {id: 'parcelNo', title:'Parcel No'},
+            {id: 'collected', title:'Collected'}
+        ]
+    });
+    csvWriter
+        .writeRecords(data)
+        .then(()=> console.log('The CSV file was written succesfully,'));
+
+}
 
 async function getAllUncollected() {
     const allUncollectedPackagesUnsort = await getAllUncollectedPackages()

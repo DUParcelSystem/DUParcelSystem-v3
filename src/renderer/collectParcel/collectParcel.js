@@ -5,11 +5,9 @@ const { ipcRenderer } = require("electron");
 const fullName = require('fullname');
 
 var searchCIS = ''
-// var uncollectedPackages = []
 var totalUncollectedPackageNum = 0
 var num = 0
 var showPackagesId = []
-// var cannotFindPackagesArray = []
 var recentCollectToUncollectNum = 0
 
 var pcUserName;

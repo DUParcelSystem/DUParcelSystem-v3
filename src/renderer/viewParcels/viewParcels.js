@@ -13,7 +13,6 @@ const tabByArrivedDate = document.getElementById("tabByArrivedDate")
 const tabByCollectedDate = document.getElementById("tabByCollectedDate")
 const tabByCIS = document.getElementById("tabByCIS")
 
-pcUserName = 'James'
 var onTab = "allUncollected"
 var onDate = ''
 

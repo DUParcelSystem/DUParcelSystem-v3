@@ -28,7 +28,8 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.1",
     "firebase": "^9.6.10",
-    "fullname": "^4.0.1"
+    "fullname": "^4.0.1",
+    "nodemon": "^2.0.15"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.63",
@@ -36,8 +37,7 @@
     "@electron-forge/maker-rpm": "^6.0.0-beta.63",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
     "@electron-forge/maker-zip": "^6.0.0-beta.63",
-    "electron": "^17.2.0",
-    "electron-builder": "^22.14.13"
+    "electron": "^17.2.0"
   },
   "config": {
     "forge": {

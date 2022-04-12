@@ -201,6 +201,8 @@ async function getAllUncollected() {
 
     const allUncollectedPackages = sortAllUncollected(allUncollectedPackagesUnsort)
 
+    console.log(allUncollectedPackages);
+
     var letterNum = 0;
     var parcelNum = 0;
     const table = document.getElementById('uncollectedTable')

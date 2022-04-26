@@ -1,6 +1,7 @@
 const { getAllUncollectedPackages, getAllTimePackages, getOneStudentPackages } = require('../firebase.js');
 const { database, sortAllUncollected, sortByLastName } = require('../readJSON.js');
-const { ipcRenderer } = require('electron')
+const { ipcRenderer } = require('electron');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 const searchByUncollectedBtn = document.getElementById("searchByUncollectedBtn")
 const searchByArrivedDateBtn = document.getElementById("searchByArrivedDateBtn")
@@ -26,9 +27,15 @@ document.getElementById("printToPDF").addEventListener('click', () => {
 
 })
 
+document.getElementById("printToCSV").addEventListener('click', () => {
+    document.getElementById("printToCSV").blur()
+    outputCSV()
+
+
+})
+
 searchByUncollectedBtn.addEventListener('click', async () => {
     onTab = "allUncollected"
-
     if (searchByUncollectedBtn.classList.contains("active")) {
         return
     }
@@ -195,6 +202,97 @@ document.getElementById('searchCISForm').addEventListener("submit", async functi
 
 });
 
+
+// function outputCSV(data) {
+//     data = [
+//         {
+//             arrivedBy: "Aaron Cheung",
+//             arrivedEmailSent: null,
+//             arrivedTime: {
+//                 seconds: 1649260367,
+//                 nanoseconds: 844000000
+//             },
+//             cis: "drwm68",
+//             collected: false,
+//             collectedTime: null,
+//             givenOutBy: null,
+//             id: "atYHxLKqDBVpQ"
+//         }
+//     ]
+// }
+
+
+function convertUNIX(timestamp){
+
+    if (timestamp != null) {
+        let time = timestamp.seconds
+        const firebaseTime = time * 1000
+        const firebaseTimeMili = new Date(firebaseTime)
+        const option = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric", hour12: true }
+        const localTimeString = firebaseTimeMili.toLocaleString("en-GB", option)
+
+        return localTimeString
+    }
+    else {
+        return timestamp
+    }
+
+}
+
+
+async function outputCSV() {
+    const allUncollectedPackagesUnsort = await getAllUncollectedPackages()
+    let data = sortAllUncollected(allUncollectedPackagesUnsort)
+    for (let i = 0; i < data.length; i++) {
+        let package = data[i]
+        let userCIS = package.cis
+        data[i].firstName = database[userCIS]["fName"]
+        data[i].lastName = database[userCIS]["lName"]
+        data[i].arrivedEmailSent = convertUNIX(data[i].arrivedEmailSent)
+        data[i].arrivedTime = convertUNIX(data[i].arrivedTime)
+        data[i].collectedTime = convertUNIX(data[i].collectedTime)
+        data[i].reminderEmails = convertUNIX(data[i].reminderEmails)
+        for (let [key, value] of Object.entries(data[i])){
+            if (value == null || value === ''){
+                data[i][key] = 'N/A'
+            }
+            else if (value == false) {
+                data[i][key] = 'No'
+            }
+            else if (value == true) {
+                data[i][key] = 'Yes'
+            }
+        }
+
+    }
+    console.log(data)
+    const homeDir = require('os').homedir()
+    const desktopDir = `${homeDir}/Desktop`;
+
+    const csvWriter = createCsvWriter({
+        path: desktopDir+'/out.csv',
+        header: [
+            {id: 'firstName', title: 'First Name'},
+            {id: 'lastName', title: 'Last Name'},
+            {id: 'cis', title: 'CIS'},
+            {id: 'type', title: 'Type'},
+            {id: 'parcelNo', title: 'Parcel No'},
+            {id: 'id', title: 'Parcel ID'},
+            {id: 'reminderEmails', title: 'Reminder Emails'},
+            {id: 'arrivedTime', title: 'Arrived Time'},
+            {id: 'arrivedBy', title: 'Received By'},
+            {id: 'arrivedEmailSent', title: 'Notification Email Sent'},
+            {id: 'collected', title: 'Collected'},
+            {id: 'collectedTime', title: 'Collection Time'},
+            {id: 'givenOutBy', title: 'Given Out By'}
+
+        ]
+    });
+    csvWriter
+        .writeRecords(data)
+        .then(()=> console.log('The CSV file was written succesfully,'));
+
+}
 
 async function getAllUncollected() {
     const allUncollectedPackagesUnsort = await getAllUncollectedPackages()

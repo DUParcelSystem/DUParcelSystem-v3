@@ -88,6 +88,12 @@ document.getElementById('arrivedDateForm').addEventListener("submit", async func
 
     var allArrivedTimePackages = await getAllTimePackages(startDate, endDate, "arrivedTime")
 
+    for (var i = 0; i < allArrivedTimePackages.length; i++) {
+        const userCIS = allArrivedTimePackages[i]["cis"]
+        allArrivedTimePackages[i]["fName"] = database[userCIS]["fName"]
+        allArrivedTimePackages[i]["lName"] = database[userCIS]["lName"]
+    }
+
     allArrivedTimePackages = sortByLastName(allArrivedTimePackages)
 
     showAllTimePackages(allArrivedTimePackages, "arrivedDateTable", "arrivedTimepackageTotalText", "")

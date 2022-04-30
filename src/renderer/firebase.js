@@ -216,7 +216,7 @@ async function getAllTimePackages(startDate, endDate, time) {
     return allTimePackages
 }
 
-// get all uncollected parcels from specific user
+// get all packages from specific user
 async function getOneStudentPackages(searchCIS) {
 
     var studentPackages = []

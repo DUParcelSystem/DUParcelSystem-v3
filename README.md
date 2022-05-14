@@ -4,7 +4,7 @@
 
 In my university accommodation, the reception receives hundreds and hundreds of parcels and letters every day for students. Currently, the receptionist will mark down the students' names of each parcel or letter, enter their names into the computer and send individual emails to students, which is time-consuming and inefficient.
 
-So I decided to create this project as a proof of concept and present it to my university, which aims to reduce to workload for receptionists and increase the efficiency of notifying students when a student is collecting parcels. Here are the main functionalities of my desktop app:
+So I decided to create this project as a proof of concept and present it to my university, which aims to reduce to workload for receptionists and increase the efficiency of notifying students and when a student is collecting parcels. Here are the main functionalities of my desktop app:
 - search students' name
 - send notification emails to students when the parcel arrives at the reception
 - send reminder emails to students after the parcel arrives for a period of time
@@ -20,7 +20,7 @@ You may check out this [demo video](https://durhamuniversity-my.sharepoint.com/:
 Clone this project to your environment and run these commands within the directory.
 
 ```
-npm install // install node modules
+npm install     // install node modules
 npm run start   // start electron app
 ```
 

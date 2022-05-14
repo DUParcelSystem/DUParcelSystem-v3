@@ -27,3 +27,15 @@ npm run start   // start electron app
 ## Known issue
 
 Currently, there is a known issue on Windows. When starting the app on Windows, it might not responds or take forever to load. This issue is due to an NFC library issue. While on macOS works fine. A new update of the app version is currently under development. Thank you for your patience.
+
+
+## Planning
+
+This is my initial idea to the project.
+
+![Initial diagram to show the architecture and the flow of the whole new parcel system](v1_diagram.jpg)
+
+
+This is the final architecture of this project.
+
+![Final architecture of the parcel system](finalArchitectureDiagram.jpg)

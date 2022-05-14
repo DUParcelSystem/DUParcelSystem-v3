@@ -9,6 +9,7 @@ So I decided to create this project as a proof of concept and present it to my u
 - send notification emails to students when the parcel arrives at the reception
 - send reminder emails to students after the parcel arrives for a period of time
 - store parcels' information into a database (including arrival time, notification email sent time, etc.)
+- view parcels' information by student username, all not collected parcels, the arrival date of the parcels, or the collected date of the parcels
 - integral with campus card for the student to collect their parcel by tapping
 
 This is a desktop app developed with Electron and Firebase.
